@@ -1,19 +1,16 @@
 %
 % region kriging on a grid based on cluster points
 %
-% kai wirtz (hereon) 2023
+% kai wirtz (hereon) Dec 2023
 %function gp = make_grid(offset,dll)
 close all
 clear all
 addpath('~/tools/m_map')
 
-%load_pars; % sets common parameters (scdir, cc, latlim, regs)
-breaks=3000:400:9800;
+load_pars; % sets common parameters (e.g., scdir, latlim, breaks)
 
-latlim=[34 71]; lonlim=[-12 37]; % entire Europe
-scdir='p3k14c/';
-MaxOcc=4;
-OnlySeaMask=0;
+% --------------------------------------
+% retrieves control parameters from function argument (in parallel compuation mode)
 if exist('offset')
   offset=str2num(offset); npart=64;
 else
@@ -23,88 +20,68 @@ if exist('dll')
   dlon=str2num(dll); dlat=dlon;
 else
   dlon=0.05;  dlat=0.05;
-%  dlon=0.2;  dlat=0.2;
 end
 
-lightgray=repmat(0.9,1,3);
-%coastfilename=['europe.mat'];
-coastfilename=['europe-norm.mat'];
-%coastfilename='sns_coast.mat';
-
-sc=load(coastfilename);
-xcoast=sc.ncst(:,1);
-ycoast=sc.ncst(:,2);
+% --------------------------------------
+% sets parameters and switches
+MaxOcc  = 4;   % maximal occupation per grid cell
 angl=(0:0.04:1)*2*3.1415;
 sn=[[1 1];[1 -1];[-1 1];[-1 -1];];
 
-%long=-5:dlon:10; latg=40:dlat:53;
+% grid information
 long=lonlim(1):dlon:lonlim(end); latg=latlim(1):dlat:latlim(end);
 nx=length(long);
 ny=length(latg);
 
+% spatial weighing function
 radmax = round(1.8/dlon);
 for ix=0:radmax-1
   for iy=0:ix
     rad=sqrt(ix*ix+iy*iy);
     if rad<=radmax+0.01
-      % weigh(1+ix,1+iy)=1./(1.+10*rad*dlon);
-      % weigh(1+ix,1+iy)=exp(-(1.2*rad*dlon)^2);
+    % exponential decay with distance from center
        weigh(1+ix,1+iy) = exp(-(7*rad*dlon));
-       weigh(1+iy,1+ix)=weigh(1+ix,1+iy);
+       weigh(1+iy,1+ix) = weigh(1+ix,1+iy);
     else
        weigh(1+ix,1+iy)=0;weigh(1+iy,1+ix)=0;
     end
   end
 end
 weigh(1,1)=1;
-[iwx,iwy]=find(weigh>0);
-%%size(xcoast)
-if 0
-  value=zeros(nx,ny)-9999;
-  xp=ceil(nx/npart);
-  for ix=1+(offset-1)*xp:min(nx,offset*xp)
-    for iy=1:ny
-     if inpolygon(long(ix),latg(iy),xcoast,ycoast)
-       value(ix,iy)=0;
-     end
-    end
-    fprintf('%d: %d/%d\n',offset,ix,min(nx,offset*xp));
-  end
-  save(['seamask_' num2str(dlon) '_' num2str(offset) '.mat'],'value','long','latg');
-else
-  %load seamask2_0.05.mat %seamask_High
-  load seamask_norm_0.05.mat %seamask_High
-  %values(1,:,:)=value;
-end
-%figure(12);
-%imagesc(value);
 
-if OnlySeaMask==0
+% load seamask
+load seamask_norm_0.05.mat %seamask_High
 
-%landfrac=length(find(value>=0))/length(value(:));
-load([scdir 'mat/C14_p3k14c_europe_neo']);%'lonsn','latsn','C14agesn','C14SDsn','SiteIDsn','datIDsn'
+% load C14 dates and site info
+load([scdir 'mat/C14_europe']);%'lonsn','latsn','C14agesn','C14SDsn','SiteIDsn','datIDsn'
 nt=length(breaks);
-ncol=round(sqrt(nt))+1;  nrow=ceil(nt/ncol);
-dxp=0.97/ncol;dyp=0.97/nrow;
 
+% number of columns and rows in plot; size
+ncol=round(sqrt(nt))+1;  nrow=ceil(nt/ncol);
+dxp=0.97/ncol; dyp=0.97/nrow;
+
+% --------------------------------------
+% loop over time segments
 tii=0;
 for ti=breaks
   if 1
+    % clear matrices
     values=zeros(MaxOcc,nx,ny); %-9999 all ocean
     regs=zeros(MaxOcc,nx,ny); % all ocean
-    %%[lo,la] = meshgrid(long,latg);
-    %m_usercoast(coastfilename,'patch',lightgray,'LineStyle','none');
-  %  load([scdir 'C14_dASIS']);
-    load([scdir 'mat/clusti3_' num2str(ti) '_120']);
-    lons=lonsn;lats=latsn;
-    %C14ages1=C14agesn;C14SDs1=C14SDsn;SiteIDs1=SiteIDsn; datIDs1=datIDsn;
-  %    clustdat=load([scdir 'cluster.dat']);
-  %    regionlon=clustdat(:,4); regionlat=clustdat(:,5);
+
+    % load geo-position of sites and index that links sites to clusters
+    load([scdir 'mat/clusti_' num2str(ti) '_120']);
+    lons = lonsn;  lats = latsn;
+
+    % clear index file
     clustn=unique(clusti);
     clustn=clustn(~isnan(clustn));
     clustn=clustn(clustn~=0);
-    ncolor=length(clustn);
-    fprintf('%d\n',ti);
+
+    ncolor=length(clustn); % number of clusters/regions
+    fprintf('t=%d #regions=%d\n',ti,ncolor);
+
+    % center position of regions
     for i=1:ncolor
       ii=find(clusti==i);
       lon=lonsn(ii); lat=latsn(ii);
@@ -112,11 +89,16 @@ for ti=breaks
       fprintf('%2d:%1.1f %1.1f\t',i,regionlon(i),regionlat(i));
     end
     fprintf('\n');
+
+    % kriging: distribution of site positions -> grid occupation
     make_grid_regions
   else
-    load([scdir 'mat/regiongrid3_' num2str(ti)]);
+  % load region/grid information from binary file
+    load([scdir 'mat/regiongrid_' num2str(ti)]);
   end
 
+ % --------------------------------------
+ % plot output
   gcf=figure(2);
   set(gcf,'position',[15 20 850 750],'Color','w','Visible','on');
   clf;
@@ -143,6 +125,7 @@ for ti=breaks
   nreg(tii)=ncolor;
 end %ti
 
+% --------------------------------------
 % save areas to file
 save([scdir 'area_' num2str(dlon) '_' num2str(breaks(1)) '_' num2str(breaks(end)) '.mat'],'areav','nreg');
 
@@ -150,5 +133,3 @@ save([scdir 'area_' num2str(dlon) '_' num2str(breaks(1)) '_' num2str(breaks(end)
 set(gcf,'PaperPositionMode','auto','InvertHardCopy','off','Visible','on');
 outfilename=[scdir 'plots/grid' num2str(dlon) '.png'];
 print('-dpng','-r300', outfilename);
-
-end

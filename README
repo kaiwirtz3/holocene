@@ -12,7 +12,11 @@ For example, parallel processing of dingle patch jobs can be invoked on HPC by "
 
 Requirenments:
   MATLAB
-  R including libraries (rworldmap,rcarbon,R.matlab,RColorBrewer,sp)
+   including package 'M_MAP';
+   insert/correct installation path in 'addpath('~/tools/m_map')' found in the header of many MATLAB-scripts
+
+  R
+   including libraries (rworldmap,rcarbon,R.matlab,RColorBrewer,sp)
 
 Input data
   collected radiocarbon dates for Europe at a coarse grid in  out/mat/C14_europe_[1-64].mat
@@ -23,16 +27,18 @@ Execution:
 -------------
 all scripts can be invoked by a single master shell command: "./master.sh"
 
-for the sequence of scripts and
+for running R-scripts (e.g."r-example.r"):    start 'R' terminal and type 'source("r-example.r")'
+                                              or from bash terminal, type  'Rscript r-example.r'
+for running MATLAB-scripts (e.g."m-example.m"): start MATLAB terminal and type 'm-example'
+                                              or from bash terminal, type  'matlab -nodesktop -r "try; m-example; catch; end; quit"
 
-file dependencies:
 -------------
 sequence of script execution  and dependencies (see also master.sh)
 
 grid_growth.r
 collect.r
 cluster.r
-make_grid.m
+make_grid.m (uses make_grid_regions.m)
 
 spd_growth.r  # reads PrePop_ clusti2 writes AllPop for time slices
 # pooled method

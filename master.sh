@@ -1,6 +1,6 @@
 # master bash script for the joint analysis of archaeological C14 and paleo-climate proxy data
 # kai wirtz Dec 2023
-# edit scdir='out/'; and 'addpath('~/tools/m_map');' in load_pars.m 
+# edit scdir='out/'; and 'addpath('~/tools/m_map');' in load_pars.m
 
 #  reads C14_europe_4_*  saves eurogrid_*.bin
 Rscript grid_growth.r
@@ -8,20 +8,12 @@ Rscript grid_growth.r
 
 Rscript collect.r # loads bin/eurogrid_1-64, writes bin/eurodat_all
 Rscript cluster.r # in parallel mode slumclust.sh
-##Rscript collect_cluster_growth.r # cscrit= 600->800 # critical cluster size
-#cluster_growth.r # can also be run standalone (perhaps requires few library calls)
-#  reads eurospatial_RegionPatch.bin
-#  forms region using an extended kmeans algorithm with optimized total number of clusters (for each RegionPatch)
-#  can save clusti.mat (should be outcommented if run as routine of region_growth_cluster)
-# if cluster_growth.r was run in parallel mode, the individual outputs for the sub-continental patches needs to be concatenated using merge_clusti.m
-# cluster regions and compiles climate events
-
-# for esthetic correction: clean mixed sites on islands semi-manually
-## clean_islands check_island_sites
+#  forms regions using an extended kmeans algorithm with optimized total number of clusters (for each RegionPatch)
+#  saves clusti.mat
 
 # region kriging on a grid based on cluster points
-make_grid.m
-# matlab -nodesktop -r "try; master1_neo; catch; end; quit" > LogFile 2> ErrorLogFile
+matlab -nodesktop -r "try; make_grid; catch; end; quit" > LogFile2 2> ErrorLogFile2
+##make_grid.m
 
 Rscript spd_growth.r  # reads PrePop_ clusti2 writes AllPop for time slices
 or
