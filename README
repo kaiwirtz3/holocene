@@ -1,0 +1,68 @@
+-------------------------------------------------------
+MATLAB and R-scripts for the analysis of
+ archaeological C14 and paleo-climate proxy data
+ kai wirtz (Hereon) Dec 2023
+-------------------------------------------------------
+
+Code availability:
+https://github.com/kaiwirtz3/holocene
+
+The MATLAB and R code enables standalone or parallel processing.
+For example, parallel processing of dingle patch jobs can be invoked on HPC by "sbatch --array=1-64 slurm.sh"
+
+Requirenments:
+  MATLAB
+  R including libraries (rworldmap,rcarbon,R.matlab,RColorBrewer,sp)
+
+Input data
+  collected radiocarbon dates for Europe at a coarse grid in  out/mat/C14_europe_[1-64].mat
+  collected radiocarbon dates for Europe pooled in  out/mat/C14_europe.mat
+  collected radiocarbon dates for East Asia pooled in  out/mat/C14_EA.mat
+
+Execution:
+-------------
+all scripts can be invoked by a single master shell command: "./master.sh"
+
+for the sequence of scripts and
+
+file dependencies:
+-------------
+sequence of script execution  and dependencies (see also master.sh)
+
+grid_growth.r
+collect.r
+cluster.r
+make_grid.m
+
+spd_growth.r  # reads PrePop_ clusti2 writes AllPop for time slices
+# pooled method
+Rscript spd_all.r #reads C14_p3k14c_europe_neo, writes AllPop3'_all
+
+# collects RGR from time slices
+plot_ContRGR %reads AllPop_i writes AllPop_tag_all avg_rgr_ (avg_rgr_all all major methods)  RGR_MethComp.png
+
+# plot map with proxy locations and occupation boxes
+plot_sites
+
+plot_varmap_slice %reads AllPop_i
+
+# plots and saves regional RGR ; e.g., writes Ire_rgr
+extract_rgr
+
+# calculates occupation density
+occdens  # reads individual data files from data/.. (load_occ.m) ; writes OccTable_%d.tex, archoccdens
+
+# -------------------------------------
+# process climate proxy data
+proxy_dtw  # applies DTW writes dtw_proxydata
+## pca_proxydata #
+
+LICENSE
+-------
+If not stated otherwise, the entire model software is licensed under
+  the GNU Public License version 3 or later.
+  See <http://www.gnu.org/licenses/gpl-3.0.txt>
+  for the complete terms of the license.
+
+Documentation:
+--------------
