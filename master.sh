@@ -11,11 +11,11 @@ Rscript cluster.r # in parallel mode slumclust.sh
 #  forms regions using an extended kmeans algorithm with optimized total number of clusters (for each RegionPatch)
 #  saves clusti.mat
 
-# region kriging on a grid based on cluster points
+# region kriging on a grid  - based on cluster points
 matlab -nodesktop -r "try; make_grid; catch; end; quit" > LogFile2 2> ErrorLogFile2
 ##make_grid.m
 
-Rscript spd_growth.r  # reads PrePop_ clusti2 writes AllPop for time slices
+Rscript spd_growth.r  # reads clusti, writes AllPop for time slices
 or
 sbatch --array=0-101 slurmspd.sh (for 6 SPD settings: 6*17=102, start with 0!)
 
@@ -62,9 +62,3 @@ plot_stat # reads target_ts_13 ; writes show_stat_.png glm_coeff_.tex
 #write_ts
 
 matlab -nodesktop -r "try; master2; catch; end; quit" > LogFile2 2> ErrorLogFile2
-
-cd p3k14c/plots/maps
-for a in map_slice*.png; do b=`basename $a .png`; convert -resize 15% $a $b'_red.png'; echo $b'_red.png'; done
-
-li=( $(find . -name "*.png" -newer map_slice_67_3300.png) );
-for a in "${li[@]}"; do b=`basename $a .png`; convert -resize 15% $a $b'_red.png'; echo $b'_red.png'; done

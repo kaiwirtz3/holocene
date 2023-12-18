@@ -64,15 +64,15 @@ for (ri in ri0:ri1)
   rland  <-  min(10,rland)
   print(paste('sea grid',ng,nl,round(rland,digits=3),'lo',loi[1],loi[length(loi)],'la',lai[1],lai[length(lai)]))
 
-  # filters for high quality=low SD C14-dates depending on total number and land ratio
-  SDc  <- 220-sqrt(n0*rland)*2.5
+  # filters for high quality=low SD C14-dates depending on density: total number and land ratio
+  SDc  <- 220 - sqrt(n0*rland)*2.5 # 4^o x 4^o -> 1.33e+05 km2 -> sqrt(N/1.33e+05km2 6.25*1.33e+05km2)
   SDc  <- max(SDc,40)
   ii   <- which(dat$C14SD < SDc)
 
   n <- length(ii) # number of filtered dates
   if (n>0) {
 
-  # estimate chronologies
+  #  calibration using intcal20
   edates <- calibrate(dat$C14age[ii],dat$C14SD[ii],normalised=FALSE,verbose=FALSE,calCurves='intcal20')
   print(paste('dates done ... ',n,'from',n0))
 

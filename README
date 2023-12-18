@@ -12,7 +12,7 @@ For example, parallel processing of dingle patch jobs can be invoked on HPC by "
 
 Requirenments:
   MATLAB
-   including package 'M_MAP';
+   including packages 'M_MAP' and 'pca_toolbox';
    insert/correct installation path in 'addpath('~/tools/m_map')' found in the header of many MATLAB-scripts
 
   R
@@ -30,19 +30,19 @@ all scripts can be invoked by a single master shell command: "./master.sh"
 for running R-scripts (e.g."r-example.r"):    start 'R' terminal and type 'source("r-example.r")'
                                               or from bash terminal, type  'Rscript r-example.r'
 for running MATLAB-scripts (e.g."m-example.m"): start MATLAB terminal and type 'm-example'
-                                              or from bash terminal, type  'matlab -nodesktop -r "try; m-example; catch; end; quit"
-
+                                              or from bash terminal, type  'matlab -nodesktop -r "try; m-example; catch; end; quit" '
 -------------
 sequence of script execution  and dependencies (see also master.sh)
 
 grid_growth.r
 collect.r
 cluster.r
-make_grid.m (uses make_grid_regions.m)
+make_grid.m (uses cl_distance.m, make_grid_regions.m)
 
-spd_growth.r  # reads PrePop_ clusti2 writes AllPop for time slices
+spd_growth.r (uses movavg.r)
+ # reads PrePop_ clusti2 writes AllPop for time slices
 # pooled method
-Rscript spd_all.r #reads C14_p3k14c_europe_neo, writes AllPop3'_all
+spd_all.r #reads C14_p3k14c_europe_neo, writes AllPop3'_all
 
 # collects RGR from time slices
 plot_ContRGR %reads AllPop_i writes AllPop_tag_all avg_rgr_ (avg_rgr_all all major methods)  RGR_MethComp.png
