@@ -2,13 +2,12 @@
 #
 # kai wirtz (HZG) 2023
 #
-if(1) {
 library(rworldmap)
 library(rcarbon)
 library('R.matlab')
 library("RColorBrewer")
-library(sp)
-}
+library(sf)
+
 scdir='out/'
 
 # checks for input arguments that control partial computation
@@ -27,7 +26,7 @@ if (length(myargs)>0) {
  if (ri1 < ri0) {ri1  <-  ri0}
  } else { #all sub-domains
 ri0 <- 1
-ri1 <- 1
+ri1 <- 8
 #clusti=rep(0,99000)
 }
 
@@ -96,7 +95,7 @@ for (ri in ri0:ri1)
   print('ebins ready ...')
 
   sites2 <- data.frame(id=sites[usitei0],lat=lat[usitei0],lon=lon[usitei0]) # 3000-9000 !!
-
+  sites1  <- st_as_sf(sites2,coords=c('lon','lat'),crs=4326)
   # vector of indices to dates
   pclust <- dat$SiteID[ii[usitei0]]
   pclust0<- dat$SiteID[ii]
@@ -109,12 +108,12 @@ for (ri in ri0:ri1)
   coordinates(sites2) <- c("lon","lat") #sp::
   proj4string(sites2) <- CRS("+proj=longlat +datum=WGS84")
 
+  ## outcomment for version(rcarbon) < 1.5
   # Compute distance matrix
-  d <- spDists(sites2,sites2,longlat=TRUE)
-
+  ##d <- spDists(sites2,sites2,longlat=TRUE)
   # Compute spatial weights
-  w <- spweights(d,h=100)
-  print('d and w ready ...')
+  ##w <- spweights(d,h=100)
+  ##print('d and w ready ...')
 
   # define time windows
   dt <- 400
@@ -130,8 +129,10 @@ for (ri in ri0:ri1)
   rgr <- rgra$roca
 
   # spatial permutation tests of sample sites to detect local deviations in rates of change in the SPD
-  eurospatial <- sptest(calDates=edates, bins=ebins,timeRange=timeRange,locations=sites2,permute="locations",nsim=1000, breaks=breaks, spatialweights=w, ncores=4)
-
+  ## outcomment for version(rcarbon) < 1.5
+  ##eurospatial <- sptest(calDates=edates, bins=ebins,timeRange=timeRange,locations=sites2,permute="locations",nsim=1000, breaks=breaks,spatialweights=w, ncores=4) #
+  # sptest after rcarbon-1.5 based on sf
+  eurospatial <- sptest(calDates=edates, bins=ebins,timeRange=timeRange,locations=sites1,locations.id.col='id',h=100,kernel='gaussian',permute="locations",nsim=100,breaks=breaks,ncores=4,verbose=FALSE)
   print(dim(eurospatial$qval))
 
   #  output to a map

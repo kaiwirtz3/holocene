@@ -4,7 +4,7 @@ MATLAB and R-scripts for the analysis of
  kai wirtz (Hereon) Dec 2023
 -------------------------------------------------------
 
-Code availability:
+Code and data availability:
 https://github.com/kaiwirtz3/holocene
 
 The MATLAB and R code enables standalone or parallel processing.
@@ -13,15 +13,19 @@ For example, parallel processing of dingle patch jobs can be invoked on HPC by "
 Requirenments:
   MATLAB
    including packages 'M_MAP' and 'pca_toolbox';
-   insert/correct installation path in 'addpath('~/tools/m_map')' found in the header of many MATLAB-scripts
+   insert/correct installation path in 'addpath('~/tools/m_map')' found in the header of some MATLAB-scripts, or 'addpath('~/tools/pca_toolbox')' in proxy_dtw.m
 
   R
    including libraries (rworldmap,rcarbon,R.matlab,RColorBrewer,sp)
+   for rcarbon version <1.5 see comments in grid_growth.r ("spweights")
 
 Input data
-  collected radiocarbon dates for Europe at a coarse grid in  out/mat/C14_europe_[1-64].mat
-  collected radiocarbon dates for Europe pooled in  out/mat/C14_europe.mat
-  collected radiocarbon dates for East Asia pooled in  out/mat/C14_EA.mat
+  collected radiocarbon dates for Europe at a coarse grid in c14mat/C14_europe_[1-64].mat
+   radiocarbon dates for Europe pooled in  c14mat/C14_europe.mat
+   radiocarbon dates for East Asia pooled in  c14mat/C14_EA.mat
+  collected paleoclimate proxy time-series and meta-info in
+    paleoclim/InEur_27_920.mat : index ('InEur') to proxies in EU domain
+    paleoclim/proxydescription_488_0_11.00_1.70.mat % struct evinfo
 
 Execution:
 -------------

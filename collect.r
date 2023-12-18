@@ -10,7 +10,7 @@ scdir='out/'  # main data IO directory
 
 # range of grid patches
 ri0=1
-ri1=64
+ri1=8#64
 
 # statistical rigor
 plim  = 0.05

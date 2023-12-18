@@ -2,7 +2,7 @@
 # kai wirtz Dec 2023
 # edit scdir='out/'; and 'addpath('~/tools/m_map');' in load_pars.m
 
-#  reads C14_europe_4_*  saves eurogrid_*.bin
+#  reads C14_europe_*  saves eurogrid_*.bin
 Rscript grid_growth.r
 # on HPC: sbatch --array=1-64 slurm.sh
 
@@ -16,11 +16,10 @@ matlab -nodesktop -r "try; make_grid; catch; end; quit" > LogFile2 2> ErrorLogFi
 ##make_grid.m
 
 Rscript spd_growth.r  # reads clusti, writes AllPop for time slices
-or
-sbatch --array=0-101 slurmspd.sh (for 6 SPD settings: 6*17=102, start with 0!)
+#or sbatch --array=0-101 slurmspd.sh (for 6 SPD settings: 6*17=102, start with 0!)
 
 # pooled method
-Rscript spd_all.r #reads C14_p3k14c_europe_neo, writes AllPop3'_all
+Rscript spd_all.r #reads C14_europe_neo, writes AllPop_all
 
 # collects RGR from time slices
 plot_ContRGR %reads AllPop_i writes AllPop_tag_all avg_rgr_ (avg_rgr_all all major methods)  RGR_MethComp.png
@@ -32,9 +31,6 @@ plot_varmap_slice %reads AllPop_i
 
 # plots and saves regional RGR ; e.g., writes Ire_rgr
 extract_rgr
-
-# calculates occupation density
-occdens  # reads individual data files from data/.. (load_occ.m) ; writes OccTable_%d.tex, archoccdens
 
 # -------------------------------------
 # process climate proxy data
