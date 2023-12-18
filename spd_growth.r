@@ -1,4 +1,5 @@
-# calculates Summed Probability Density (SPD) and related growth for each region and time slice
+# calculates Summed Probability Density (SPD)
+#   and related growth (RGR) for each region and time slice
 #   using an array of methods
 #
 # kai wirtz (HZG) 2023
@@ -39,7 +40,7 @@ tagv=c('_NoNorm_Bin100') #c(,'_NoNorm_Bin100','_NoNorm50','_NoNorm150'
 
 # read matlab C14 data
 norms=c('','No')
-dat<-readMat(paste0(scdir,'mat/C14_europe_neo.mat'))
+dat<-readMat(paste0('c14mat/C14_europe_neo.mat'))
 #'lonsn','latsn','C14agesn','C14SDsn','SiteIDsn','datIDsn'
 
 ncol=2

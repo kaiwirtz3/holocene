@@ -46,9 +46,8 @@ dim(v$value)
 # loop over patch / data segments (entire set exceeds memory)
 for (ri in ri0:ri1)
   {
-
   # read matlab C14 data for single grid patch
-  fname <- paste0(scdir,'mat/C14_europe_',ri,'.mat')
+  fname <- paste0('c14mat/C14_europe_',ri,'.mat')
   print(paste('read C14 data from',fname))
   dat <- readMat(fname)
   n0  <- length(dat$C14age) # number of dates

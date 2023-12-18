@@ -53,7 +53,7 @@ weigh(1,1)=1;
 load seamask_norm_0.05.mat %seamask_High
 
 % load C14 dates and site info
-load([scdir 'mat/C14_europe']);%'lonsn','latsn','C14agesn','C14SDsn','SiteIDsn','datIDsn'
+load(['c14mat/C14_europe']);%'lonsn','latsn','C14agesn','C14SDsn','SiteIDsn','datIDsn'
 nt=length(breaks);
 
 % number of columns and rows in plot; size
