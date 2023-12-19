@@ -4,20 +4,23 @@
 #
 # kai wirtz (HZG) 2023
 #
-
 rm(list=ls())
 library(rcarbon)  # RCARBON by Crema2017
 library('R.matlab')
 source("movavg.r")
 
-cc='Europe'
-##breaks=seq(3400,9800,400)
-breaks=seq(3000,9800,400)
+# settings
+cc='Europe'  # continent name
+breaks=seq(3000,9800,400) # time windows with given region outlay
 # binning size in SPD calculation
-binv=c(50,50,100,100,150,150)
-binv=c(100,100)
+# bin sizes for non-normalized and normalized calibration
+#binv=c(50,50,100,100,150,150)
+#binv=c(100,100)
+binv=c(100) # only non-normalized
 ntag=length(binv)
 nbrk=length(breaks)
+
+# method and time slice as index from input argument
 myargs = commandArgs(trailingOnly=TRUE)
 print(paste('args:',length(myargs),' nbrk=',nbrk))
 if (length(myargs)>0) {
@@ -34,73 +37,49 @@ if (length(myargs)>0) {
  }
 
 # input/output directory
-scdir='p3k14c/'
+scdir='out/'
 # list of SPD methods
 tagv=c('_NoNorm_Bin100') #c(,'_NoNorm_Bin100','_NoNorm50','_NoNorm150'
+nmaxclu = 45
+dtl = 325
+dt  = 25  # time-step
 
 # read matlab C14 data
 norms=c('','No')
 dat<-readMat(paste0('c14mat/C14_europe_neo.mat'))
 #'lonsn','latsn','C14agesn','C14SDsn','SiteIDsn','datIDsn'
 
+# figure settings
 ncol=2
 nrow=3 # figure outlay
-nmaxclu = 45
-dtl = 325
-dt  = 25
 colv=rainbow(5)
-#if (!exists("ymv"))
 
 # loop over SPD methods
 for (tagi in tagi0:tagi1)
   {
   nplot=0 # reset of variables
-#  ci=NULL, yms=NULL    tms=NULL
-#  tag=tagv[tagi]
   tag=paste0('_',norms[1+(tagi%%2)],'Norm_Bin',binv[tagi])
   print(paste(tagi,tag,ti0,ti1))
   ymsa=NULL
+
   # loop over time slices
-  #tii=1
   for (tii in seq(ti0,ti1))
     {
     ti=breaks[tii]
-    #tis=breaks[ti+1]
+
     # read region/cluster info
-    file <- paste0(scdir,'bin/clusti3_', cc[1],ti,'_120.bin')
+    file <- paste0(scdir,'bin/clusti_', cc[1],ti,'_120.bin')
     load(file) #=file,clusti,k,wi,cluc
     clustn=seq(k)
     nregions=k # number of regions
     nplot=0
     # loop over regions
+
+    ymv =array(NaN,c(nregions,ceiling((2*dtl)/dt)))
+    rgrv=array(NaN,c(nregions,ceiling((2*dtl)/dt)-1))
+    n0=array(0,nregions);ndates=n0
     # load regionalized C14 dates
-#ymv=array(NaN,c(nmaxclu,length(breaks),(2*dtl)/dt))
-
-ymv =array(NaN,c(nregions,ceiling((2*dtl)/dt)))
-rgrv=array(NaN,c(nregions,ceiling((2*dtl)/dt)-1))
-n0=array(0,nregions);ndates=n0
-dim(ymv)
-if (FALSE){
-  file = paste0(scdir,"mat/PrePop3",tag,'_',tii,'_',24,".mat")
-  d<-readMat(file)
-  i0=25
-  if (d$nreg>32){
-    file = paste0(scdir,"mat/PrePop3",tag,'_',tii,'_',32,".mat")
-    d<-readMat(file)
-    i0=33
-    }
-  print(paste0("read starting data from ", file))
-   ymv=d$ymv
-   rgrv[1:nrow(d$rgr),]=d$rgr
-   n0=d$nsites
-   ndates=d$ndates
-  }
- else
-  {
-  i0=1
-  }
-
-
+    i0=1
     lat=round(dat$lat,digits=3)
     lon=round(dat$lat,digits=3)
 
@@ -127,14 +106,8 @@ if (FALSE){
         sites=c(sites,rep(ij,length(ni)))
       }
       # extra region of interest (here SW Germany)
-        # i3=which.min(abs(cd[,4]-8.8)+abs(cd[,5]-49))
-        # ii <- which(clustv$tv == cd[i3,2]) lo=dat$lon[ii] la=dat$lat[ii]
-        # i2 <- which(lo>8.2 & lo<9.56 & la>48.35 & la<49.6  )
       i2 <- which(!is.na(dat$C14agesn[ci]))
-      #i2=i2[1:400]
       ii = ci[i2]
-      #i1=1:min(400,length(ii))
-      #ii=ii[i1]
       sites=sites[i2]
       ndates[i]=length(i2)
 
@@ -151,7 +124,6 @@ if (FALSE){
       eurobins <- binPrep(sites=sites,ages=dat$C14agesn[ii],h=binv[tagi])
 
       # calculate SPD
-      #for (dtle in c(dtl,dtl/2)) {
       timeRange <- ti+c(dtl,-dtl) #time range calBP, older date first   c(10200,3000)
       steps <- seq(timeRange[1],timeRange[2],-dt) #25 year slices
       tirgr=steps[2:(length(steps)-1)]
@@ -160,10 +132,11 @@ if (FALSE){
       rgr     = clu_rgra$roca
       #expnull <- modelTest(DK.caldates, errors=DK$C14SD, bins=DK.bins, nsim=100, timeRange=c(8000,4000), model="exponential",runm=100)
     #summary(expnull,type='roc') #plot(expnull,type='roc')
+
     #Test Difference between 5120 and 4920 cal BP
     #results=p2pTest(uninull,p1=5120,p2=4920) #results #$pval [1] 0.01980198
     # From the RCARBON doc: The binning process should hence be used with caution, and its implications should be explored via a sensitivity analysis. The function binsense() enables a visual assessment of how different cut-off values can modify the shape of the SPD. The example below explores six different values and show how the highest peak in the SPD changes as a function of h but the overall dynamics remains essentially the same.
-    #  binsense(x=DK.caldates,y=DK$SiteID,h=seq(0,500,100),timeRange=c(8000,4000))
+    # binsense(x=DK.caldates,y=DK$SiteID,h=seq(0,500,100),timeRange=c(8000,4000))
 
       y  = clu_spd$grid$PrDens ## *10
       ym = movavg(y, dt, type="n")
@@ -175,23 +148,18 @@ if (FALSE){
       tm=clu_spd$grid$calBP #+ timscale/2
       tm2=tm[mi] #+ timscale/2
 
-      #print(tm[1:3])
-      #print(tm2[1:3])
-
       ymv[i,1:length(ym)]=ym # ymv[tagi,i,]=ym
-      #tmv[i,tii,1:length(tm2)]=tm2
       rgrv[i,1:length(rgr)]=rgr # ymv[tagi,i,]=ym
-      #trgr[i,tii,1:length(tirgr)]=tirgr
-        # plot SPD with own method
+
+      # plot SPD with own method
       ##plot(clu_spd,type="simple",col="indianred",lwd=1,lty=1)
       plot(tm,y,col="indianred",lwd=1,lty=1)
       #plot(clu_spd,runm= timscale,add=TRUE,type="simple",lwd=1,lty=2) #using a rolling average for smoothing
-      #di=di+1 } # for di
+
         #time grid
         #abline(v=seq(4,7)*1000, col="purple")
         # plot smoothed SPD, also of other methods
-        #for (tai in 1:tagi) {  lines(tm,y,col=colv[2],lwd=1,lty=1)
-      #for (tai in 1:2) {
+
       lines(tm2,ymv[i,],col=colv[1],lwd=2,lty=1)
       lines(tirgr,mean(ymv[i,])+5*rgrv[i,],col=colv[1],lwd=3,lty=2)
 
@@ -201,8 +169,6 @@ if (FALSE){
       if((i)%%(ncol*nrow)==-1) {
           legend(x = "topleft",legend=tagv)
           }
-      #tms=c(tms,tm)  #yms=c(yms,ym)
-      #ci=c(ci,rep(i,length(ym)))
       if(i%%8==0 | i==nregions) {
         file = paste0(scdir,"mat/PrePop3",tag,'_',tii,'_',i,".mat")
         print(paste0("write data to ", file))
@@ -211,10 +177,9 @@ if (FALSE){
       } # for i
 
     # save population data as Matlab binary
-    file = paste0(scdir,"mat/AllPop3",tag,'_',tii,".mat")
+    file = paste0(scdir,"mat/AllPop",tag,'_',tii,".mat")
     print(paste0("write data to ", file))
-    writeMat(file, poptime=tm2, ymv=ymv,trgr=tirgr,rgr=rgrv,nreg=nregions,nsites=n0,ndates=ndates) #poptime=tm
-
+    writeMat(file, poptime=tm2, ymv=ymv,trgr=tirgr,rgr=rgrv,nreg=nregions,nsites=n0,ndates=ndates)
     print(paste('close figure',tii,i,nplot))
     dev.off()
     tii=tii+1

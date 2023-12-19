@@ -1,6 +1,6 @@
-# grid_growth
+# calculates spatial statistics of SPDs on a 4°x4° grid
 #
-# kai wirtz (HZG) 2023
+# kai wirtz (Hereon) 2023
 #
 library(rworldmap)
 library(rcarbon)
@@ -26,8 +26,7 @@ if (length(myargs)>0) {
  if (ri1 < ri0) {ri1  <-  ri0}
  } else { #all sub-domains
 ri0 <- 1
-ri1 <- 8
-#clusti=rep(0,99000)
+ri1 <- 64
 }
 
 # clean variables
@@ -94,11 +93,12 @@ for (ri in ri0:ri1)
   ebins <- binPrep(sites=sites,ages=dat$C14age[ii],h=100)
   print('ebins ready ...')
 
-  sites2 <- data.frame(id=sites[usitei0],lat=lat[usitei0],lon=lon[usitei0]) # 3000-9000 !!
+  sites2  <- data.frame(id=sites[usitei0],lat=lat[usitei0],lon=lon[usitei0]) # 3000-9000 !!
   sites1  <- st_as_sf(sites2,coords=c('lon','lat'),crs=4326)
+
   # vector of indices to dates
-  pclust <- dat$SiteID[ii[usitei0]]
-  pclust0<- dat$SiteID[ii]
+  pclust  <- dat$SiteID[ii[usitei0]]
+  pclust0 <- dat$SiteID[ii]
 
   # Create a data.frame of site locations extracting spatial coordinates
   rownames(sites2) <- sites2$id
@@ -126,11 +126,12 @@ for (ri in ri0:ri1)
 
   # calc RGR for given time seqence
   rgra <- spd2rc(eurospd,breaks = breaks)
-  rgr <- rgra$roca
+  rgr  <- rgra$roca
 
   # spatial permutation tests of sample sites to detect local deviations in rates of change in the SPD
   ## outcomment for version(rcarbon) < 1.5
   ##eurospatial <- sptest(calDates=edates, bins=ebins,timeRange=timeRange,locations=sites2,permute="locations",nsim=1000, breaks=breaks,spatialweights=w, ncores=4) #
+
   # sptest after rcarbon-1.5 based on sf
   eurospatial <- sptest(calDates=edates, bins=ebins,timeRange=timeRange,locations=sites1,locations.id.col='id',h=100,kernel='gaussian',permute="locations",nsim=100,breaks=breaks,ncores=4,verbose=FALSE)
   print(dim(eurospatial$qval))
@@ -154,14 +155,14 @@ for (ri in ri0:ri1)
 
   ncolor <- 2
   cmap <- palette(rainbow(ncolor))
-  pr  <-  sample(ncolor)
+  pr   <-  sample(ncolor)
 
   # loop over time segments
   for (ti in seq(nb)) # skip first and last time segment
     {
     # prepare and open graph
-    transtis<-as.character(breaks[1+ti])
-    file  <-  paste0(scdir,"plots/EuroGr_",ri,'_',transtis,".pdf")
+    transtis<- as.character(breaks[1+ti])
+    file    <- paste0(scdir,"plots/EuroGr_",ri,'_',transtis,".pdf")
 
     ## graph settings
     ## par(oma = c(1, 0, 1, 1), mar = c(0.1, 0.1, 0.05, 0.5),mfrow=c(1,1), cex.lab=0.5,cex.sub=0.5, cex.main=1.,cex.axis=0.7)

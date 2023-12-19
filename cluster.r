@@ -43,8 +43,8 @@ cc <- 'Europe'
 if (1) {
   library(sp)
   library(rworldmap)
-  #library(rcarbon)
-  library(cluster)
+  library(stats)
+#  library(cluster)
   library('R.matlab')
   base <- getMap(resolution="low") #extract basemap
   library("RColorBrewer")

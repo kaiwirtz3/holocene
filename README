@@ -10,23 +10,29 @@ https://github.com/kaiwirtz3/holocene
 The MATLAB and R code enables standalone or parallel processing.
 For example, parallel processing of dingle patch jobs can be invoked on HPC by "sbatch --array=1-64 slurm.sh"
 
+-------------------------------------------------------
 Requirenments:
   MATLAB
    including packages 'M_MAP' and 'pca_toolbox';
    insert/correct installation path in 'addpath('~/tools/m_map')' found in the header of some MATLAB-scripts, or 'addpath('~/tools/pca_toolbox')' in proxy_dtw.m
 
   R
-   including libraries (rworldmap,rcarbon,R.matlab,RColorBrewer,sp)
+   including libraries:
+      rworldmap, rcarbon, R.matlab, RColorBrewer, cluster, sp/sf
    for rcarbon version <1.5 see comments in grid_growth.r ("spweights")
 
+-------------------------------------------------------
 Input data
+
   collected radiocarbon dates for Europe at a coarse grid in c14mat/C14_europe_[1-64].mat
    radiocarbon dates for Europe pooled in  c14mat/C14_europe.mat
    radiocarbon dates for East Asia pooled in  c14mat/C14_EA.mat
-  collected paleoclimate proxy time-series and meta-info in
-    paleoclim/InEur_27_920.mat : index ('InEur') to proxies in EU domain
-    paleoclim/proxydescription_488_0_11.00_1.70.mat % struct evinfo
 
+  collected paleoclimate proxy time-series and meta-info in
+    paleoclim/InEur_27_920.mat                      # index ('InEur') to proxies in EU domain
+    paleoclim/proxydescription_488_0_11.00_1.70.mat # struct evinfo
+
+-------------------------------------------------------
 Execution:
 -------------
 all scripts can be invoked by a single master shell command: "./master.sh"
@@ -35,18 +41,23 @@ for running R-scripts (e.g."r-example.r"):    start 'R' terminal and type 'sourc
                                               or from bash terminal, type  'Rscript r-example.r'
 for running MATLAB-scripts (e.g."m-example.m"): start MATLAB terminal and type 'm-example'
                                               or from bash terminal, type  'matlab -nodesktop -r "try; m-example; catch; end; quit" '
--------------
+--------------------------------------------------------------------
 sequence of script execution  and dependencies (see also master.sh)
 
-grid_growth.r
-collect.r
-cluster.r
-make_grid.m (uses cl_distance.m, make_grid_regions.m)
+grid_growth.r   # calculates spatial statistics of SPDs on a 4°x4° grid
 
-spd_growth.r (uses movavg.r)
- # reads PrePop_ clusti2 writes AllPop for time slices
+collect.r       # collect/merge grid cells and prepares clustering
+
+cluster.r       # create region clusters of C14 sites
+
+make_grid.m     # spatial kriging on a grid based on cluster points
+  (uses cl_distance.m, make_grid_regions.m)
+
+spd_growth.r
+  (uses movavg.r)   # reads PrePop_ clusti writes AllPop for time slices
+ 
 # pooled method
-spd_all.r #reads C14_p3k14c_europe_neo, writes AllPop3'_all
+spd_all.r #reads C14_europe_neo, writes AllPop_all
 
 # collects RGR from time slices
 plot_ContRGR %reads AllPop_i writes AllPop_tag_all avg_rgr_ (avg_rgr_all all major methods)  RGR_MethComp.png
@@ -67,6 +78,7 @@ occdens  # reads individual data files from data/.. (load_occ.m) ; writes OccTab
 proxy_dtw  # applies DTW writes dtw_proxydata
 ## pca_proxydata #
 
+-------------------------------------------------------
 LICENSE
 -------
 If not stated otherwise, the entire model software is licensed under
@@ -74,5 +86,7 @@ If not stated otherwise, the entire model software is licensed under
   See <http://www.gnu.org/licenses/gpl-3.0.txt>
   for the complete terms of the license.
 
+-------------------------------------------------------
 Documentation:
+  see Equations in Material ad Methods of Wirtz et al, subm.
 --------------

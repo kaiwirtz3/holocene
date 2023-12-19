@@ -4,13 +4,14 @@
 #
 # forms regions using an extended kmeans algorithm with optimized total number of clusters, based on SPD growth rates
 #   saves datc.bin
-library(sp)
+##library(sp)
+library(sf)
 
 scdir='out/'  # main data IO directory
 
 # range of grid patches
 ri0=1
-ri1=8#64
+ri1=64
 
 # statistical rigor
 plim  = 0.05
@@ -24,7 +25,8 @@ s0=0
 for (ri in ri0:ri1)
   {
   file <- paste0(scdir,'bin/eurogrid_',ri,'.bin')
-  if file.exists(file){
+  print(file)
+  if (file.exists(file)){
     load(file)
     print(paste(ri,length(pcl),length(pclust),'pclust=',pclust[1],pclust[length(pclust)]))
 
@@ -73,9 +75,6 @@ for (ri in ri0:ri1)
         #rt=round(rgr[ti]/2.5E-3)
         rt=0.5*asinh(rgr[ti]/2.E-3)
         if (is.na(rt) | is.nan(rt)) { rt=0 }
-        #if (rt>2) { rt=2 }
-        #if (rt<-2) { rt=-2 }
-
         fac=1
         p=rep(rt,nn)
         p0=p
