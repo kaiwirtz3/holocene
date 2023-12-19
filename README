@@ -54,34 +54,25 @@ make_grid.m     # spatial kriging on a grid based on cluster points
   (uses cl_distance.m, make_grid_regions.m)
 
 spd_growth.r
-  (uses movavg.r)   # reads PrePop_ clusti writes AllPop for time slices
- 
+  (uses movavg.r)  # reads PrePop_ clusti writes AllPop for time slices
+
 # pooled method
-spd_all.r #reads C14_europe_neo, writes AllPop_all
+spd_pooled.r    #reads C14_europe0 (or C14_EA, C14_NIreland), writes AllPop_all
 
 # collects RGR from time slices
 plot_ContRGR %reads AllPop_i writes AllPop_tag_all avg_rgr_ (avg_rgr_all all major methods)  RGR_MethComp.png
 
-# plot map with proxy locations and occupation boxes
-plot_sites
+# plot_varmap_slice %reads AllPop_i
 
-plot_varmap_slice %reads AllPop_i
-
-# plots and saves regional RGR ; e.g., writes Ire_rgr
-extract_rgr
-
-# calculates occupation density
-occdens  # reads individual data files from data/.. (load_occ.m) ; writes OccTable_%d.tex, archoccdens
-
-# -------------------------------------
+# --------------------------------------------------------------------------
 # process climate proxy data
 proxy_dtw  # applies DTW writes dtw_proxydata
-## pca_proxydata #
+
 
 -------------------------------------------------------
 LICENSE
 -------
-If not stated otherwise, the entire model software is licensed under
+If not stated otherwise, the entire analysis software is licensed under
   the GNU Public License version 3 or later.
   See <http://www.gnu.org/licenses/gpl-3.0.txt>
   for the complete terms of the license.

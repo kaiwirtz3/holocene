@@ -123,16 +123,16 @@ for (tagi in tagi0:tagi1)
       print(X)
 
       #  calibration using intcal20
-      # running calibration over 4 cores
+      # run calibration over 4 cores
       eurodates <- calibrate(dat$C14agesn[ii],dat$C14SDsn[ii],calCurves='intcal20',ncores=4,normalised=(tagi%%2==0))
       print(paste('eurodates with normalised=',(tagi%%2==0), ' ready ...'))
 
-      # creating time bins
+      # create time bins
       eurobins <- binPrep(sites=sites,ages=dat$C14agesn[ii],h=binv[tagi])
 
       # set time vector and calculate SPD
-      timeRange<- ti+c(dtl,-dtl) #time range calBP, older date first   c(10200,3000)
-      steps    <- seq(timeRange[1],timeRange[2],-dt) #25 year slices
+      timeRange<- ti+c(dtl,-dtl) # time range calBP, older date first
+      steps    <- seq(timeRange[1],timeRange[2],-dt) # 25 year slices
       tirgr    <- steps[2:(length(steps)-1)]
       clu_spd  <- spd(x = eurodates,bins=eurobins,timeRange=timeRange) #8700,3300
 
@@ -197,4 +197,4 @@ for (tagi in tagi0:tagi1)
 
     tii=tii+1
     } # for tii
-  }
+  } # for (tagi

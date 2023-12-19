@@ -26,8 +26,8 @@ fil= ff/sum(ff)
 breaks=seq(3000,9800,400)
 
 # read C14 dates
-tag <- paste0(news,'_NoNorm_Bin100') #(,'_Norm_Bin100','_NoNorm50','_NoNorm150'
-dat <- readMat(paste0(scdir,'mat/C14_',cc,'_neo.mat'))
+tag <- paste0(news,'_NoNorm_Bin100')  #'_Norm_Bin100'
+dat <- readMat(paste0('c14mat/C14_',cc,'.mat'))
         # variables: 'lonsn','latsn','C14agesn','C14SDsn','SiteIDsn','datIDsn'
 
 dt  = 10; dt2=2*dt
@@ -35,7 +35,7 @@ lat=round(dat$lat,digits=3)
 lon=round(dat$lat,digits=3)
 
 # prepare graphical output
-file = paste0(scdir,"plots/spd_all3",tag,".png")
+file = paste0(scdir,"plots/spd_all",tag,".png")
 print(paste('new figure',file))
 png(file,width=1200,height=840,units='px')
 par(oma = c(1, 0, 1, 1), mar = c(1.2, 1, 0.14, 0.5),  cex.lab=1.5,cex.sub=1, cex.main=1.5,cex.axis=2)
@@ -89,7 +89,7 @@ rgrm     <- filter(rgr, filter = fil, method = 'convolution', circular = TRUE,si
 
 # retrieve and smooth density
 y  = clu_spd$grid$PrDens
-ym = movavg(y, 20, type="n")
+ym = movavg(y, 20)
 
 # store into matrix
 mi = seq(round(0.5*dt2),floor(length(clu_spd$grid$calBP)/ dt2)* dt2, dt2)

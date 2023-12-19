@@ -1,32 +1,46 @@
-#
-# calculates Dynamic Time Warping  (DTW) of paleoclimate proxy time-series
-#
-# kai wirtz (HZG) 2023
-#
+%
+% calculates Dynamic Time Warping  (DTW) of paleoclimate proxy time-series
+%
+% kai wirtz (HZG) 2023
+%
 clear all;
 addpath('~/tools/mlabtools/pca_toolbox_1.5')
 
 % settings
-rinit='0';
-dtw_Dist_crit=90;  %% 50
-tol=0.1;
+dtw_Dist_crit = 90;  % approximately the average
+tol = 0.1;           % time tolerance in ka (thus 100yr)
+tol2= 2*tol; dtol=tol/2;
 fprintf('dtw_Dist_crit=%1.0f tol=%1.3f\n',dtw_Dist_crit,tol)
-out=0;
-nmax=5;  tfac=0.5;
-ndbin=50; %showcor=0;showextra=0; res=0.3;
-tol2=2*tol; dtol=tol/2;
-ppcol=prism(7);ppcol(3,:)=[];
-fs=20; lw=1;
+
+out=0;    % 1: graphical output
+nmax=5;   % max number of PCs in PCA
+tfac=0.2; %0.5;
+ndbin=50;
+
+% plot settings
+ppcol = prism(7);ppcol(3,:)=[];
+fs    = 20; lw=1;
+ncol  = 4; % plot display: number of columns
+nrow  = 4; % plot display: number of rows
+dxp=0.9/ncol;dyp=0.89/nrow;
+mcol(1,:)=[1 0.5 0]; mcol(2,:)=[0 0.5 1];
+
 % time segments
+dt0=0.01;
 timelimv=[[2.8 6.2];[5.8 9.5]];
 tsmax=3.;
-ncol=4;  nrow=4; % plot display: number of rows and columns
-dt0=0.01; tfac=0.2;
 
 %load_pars;
 scdir='out/';
-edir='paleoclim/';
+edir ='paleoclim/';
 
+% load paleoclimate proxy time-series and meta-info
+file=sprintf('%sInEur_%d_%03.0f.mat',edir,27,920);
+load(file);
+evinfofile=sprintf('%sproxydescription_488_0_%03.2f_%03.2f.mat',edir,11.,1.7);
+load(evinfofile); % into struct evinfo
+
+% -------------------------------------------------------
 % loop over time segments
 for tl=1:2
   timelim=timelimv(tl,:);
@@ -34,67 +48,74 @@ for tl=1:2
   time2=(timelim(1)-tol):dt0:(timelim(2)+tol);
   time20=(timelim(1)):dt0:(timelim(2));
   nt=length(time2)-1;
-  dxp=0.9/ncol;dyp=0.89/nrow; fs=20;
-  mcol(1,:)=[1 0.5 0]; mcol(2,:)=[0 0.5 1];
 
-  % load paleoclimate proxy time-series and meta-info
-  file=sprintf('%sInEur_%d_%03.0f.mat',edir,27,920);
-  load(file);
-  evinfofile=sprintf('%sproxydescription_488_0_%03.2f_%03.2f.mat',edir,11.,1.7);
-  load(evinfofile); % into struct evinfo
-
+  % time range of TS
   tmin=evinfo.t_min(InEur); tmax=evinfo.t_max(InEur);
-  iin=find(tmin<timelim(1)+tol & tmax>timelim(2)-tol);
-  InEur2=InEur;
   numprox=length(InEur);
 
   % geographical position
   lons=evinfo.Longitude(InEur); lats=evinfo.Latitude(InEur);vli=length(InEur);
 
   % -------------------------------------------------------
-  ei=1;
-  wps=zeros(numprox,1);match=wps;matchInd=zeros(1+2,numprox);;%c50=wps;
-  cDTW_Dist=zeros(numprox,numprox);
-  cDTW_sign=cDTW_Dist; cPears=cDTW_Dist;
-  cLocD=cDTW_Dist;
-  iv=1;clear datprox;
+  % initialize and clear variables/vectors
+  wps       = zeros(numprox,1); match=wps;
+  matchInd  = zeros(1+2,numprox);
+  cDTW_sign = cDTW_Dist; cPears=cDTW_Dist;
+  cLocD     = cDTW_Dist;
+  iv=1; ei=1;
+  clear datprox;
 
+  % -------------------------------------------------------
   % loop over proxy TS
+
   for ie=1:numprox
-    % -------------------------------------------------------
     i=InEur(ie);
-    tim=evinfo.time{i};
+    % dates and value of time-series (TS)
+    tim=evinfo.time{i};  ti=tim;
+    val=evinfo.value{i};
+
+    % create name tag
     scs=evinfo.Proxy{i};
     scs(regexp(scs,'[$]'))=[];%%scs(regexp(scs,'\'))=[]; %'
     ta{ie}=sprintf('%s (%s)',evinfo.Plotname{i},scs);
-    ti=tim;
-    val=evinfo.value{i};
 
+    % check for upper overlap with time segment
     if(max(ti)>time20(end)-tol2 & max(ti)<time20(end))
-      fprintf('%d %1.3f %1.3f\t',ie,min(ti),max(ti))
-      ti=reshape(ti,1,length(ti));
-      val=reshape(val,1,length(val));
-      if(ti(2)<ti(1))
+      %%fprintf('%d %1.3f %1.3f\t',ie,min(ti),max(ti))
+      ti = reshape(ti,1,length(ti));
+      val= reshape(val,1,length(val));
+
+      % extrapolation: small extension at the boundary
+      if(ti(2)<ti(1)) % direction of time vector
         ti=[time20(end) ti]; val=[val(end) val];
       else
         ti=[ti time20(end)]; val=[val val(end)];
       end
-      fprintf('%1.3f %1.3f\n',min(ti),max(ti))
+      %%fprintf('%1.3f %1.3f\n',min(ti),max(ti))
     end
 
-    tmax2{ie}=max(ti)+1*tol;tmin2{ie}=min(ti)-1*tol;
+    % set time span of TS
+    tmax2{ie}=max(ti)+tol;tmin2{ie}=min(ti)-tol;
+
+    % sort dates
     it=find(time2>=tmin2{ie} & time2<=tmax2{ie});
     [tiu,ia,ic]=unique(ti);
     time1{ie}=time2(it);
 
+    % interpolate on sorted time grid
     proxi{ie}=interp1(tiu,val(ia),time1{ie},'linear','extrap');
-    %time1{ie}=ti;
-    time0{ie}=time1{ie};
-    time1b{ie}=time1{ie};
 
+    % initialize date vectors
+    time0{ie} = time1{ie};
+    time1b{ie}= time1{ie};
+
+    % check for overlap with time segment
     if(min(ti)-tol<time20(1) & max(ti)+tol>time20(end))
+      % interpolate on sorted time grid
        x2=interp1(time1{ie},proxi{ie},time20,'linear','extrap');
+      % normalize
        x2=x2-mean(x2); x2=x2/std(x2);
+
        datprox(iv,:)=x2;
        dpi(iv)=ie;
        iv=iv+1;
@@ -103,20 +124,26 @@ for tl=1:2
     end
   end
 
-  % calc PCA
-  np=iv-1;
+  % -------------------------------------------------------
+  % calc initial PCA
+  np=iv-1; % number of valid TS
+
   pca = pca_model(datprox(1:np,:)',nmax,'auto');%'
   fprintf('\npca: %1.3f %1.3f\n',pca.cum_var(2),pca.cum_var(nmax));
 
-  we_pca=ones(numprox,1); we_dtw=ones(numprox,1);
+  we_pca = ones(numprox,1); we_dtw = we_dtw;
+  % -------------------------------------------------------
+  % loop over iterations
   for loop=1:8
-      out2=(loop==-1)+(loop==-2);
-
+    out2=(loop==-1)+(loop==-2);
+  % initialize and clear variables/vectors
     ie0=0;nf=1;iv=1;
     clear datprox;
     clear datproxw;
     dtw_weigh=zeros(numprox,1); dtw_weighi=dtw_weigh;
 
+    % -------------------------------------------------------
+    % loop over primer TS
     for ie=1:numprox
       np=mod(ie0,ncol*nrow);
       if out
@@ -140,7 +167,7 @@ for tl=1:2
       if out & out2
         gca = subplot('Position',[0.05+ix*1.05*dxp 0.07+(iy*1.05)*dyp dxp dyp]);
         set(gca,'YLim',[-1 1]*tsmax,'XLim',timelim,'Box','on','fontsize',fs,'XDir','reverse');
-      if (loop==1)
+      if (loop==1) % plot only few iterations
         hold on
         %%plot(tim,evinfo.value{i},'-','color',ones(3,1)*0.,'LineWidth',4);
         plot(time1{ie}(it),proxi{ie},'-','color',ones(3,1)*0.,'LineWidth',3);
@@ -155,7 +182,9 @@ for tl=1:2
       cs{ie}=[];csd{ie}=[]; cDTW_D{ie}=[];  cDTW_k{ie}=[];
       dists=zeros(ndbin,1);
       % ------  calculating match factor
-      deltat = zeros(1,nt+1); deltaw=deltat;
+      deltat = zeros(1,nt+1);  deltaw=deltat;
+      % -------------------------------------------------------
+      % loop over compared TS
       for i2=1:numprox
        if length(time1b{i2})>9
         j=InEur(i2);
@@ -242,7 +271,7 @@ for tl=1:2
       mDTW(ie)=mean(cDTW_Dist(ie,ind));
       mPear(ie)=mean(cPears(ie,ind));
       ii=find(deltaw>0);
-      if np>=0 & mod(ie,10)==0, fprintf('%d %d\t%1.0f %1.0f\tl=%d we=%1.3f\n',loop,ie,mDTW(ie),mPear(ie)*1E3,length(ii),we_dtw(ie)); end
+      %if np>=0 & mod(ie,10)==0, fprintf('%d %d\t%1.0f %1.0f\tl=%d we=%1.3f\n',loop,ie,mDTW(ie),mPear(ie)*1E3,length(ii),we_dtw(ie)); end
 
       if ii,
         %time1=time2;%time1{ie}
@@ -275,31 +304,10 @@ for tl=1:2
       nl=length(dt);
       dt(dt<3)=[];dt(dt>length(time1{ie})-3)=[];
       if nl>0 & length(dt)>0, fprintf('%d %d %d\t%d %d\t%1.4f %1.4f %1.3f %1.3f\n',loop,ie0,nl,dt(1),dt(end),time1{ie}(dt(1)+(-1:2))); end
-      i1=0;
-      for ij=[] %length(ind)
-        i2=ind(vi(ij));
-        j=InEur(i2);
-        ii=itj0(ie,i2):itj1(ie,i2);
-        ti=time2(it(ii));ti0=ti;
-        tia=evinfo.time{j};
-        val=evinfo.value{j}*cDTW_sign(ie,i2);
-        x2=interp1(tia,val,ti,'linear','extrap');
-        ta=sprintf('%s(%d %d) %1.0f',evinfo.Plotname{j},j,cDTW_sign(ie,i2),cDTW_Dist(ie,i2));
-        if out & out2
-          col=ppcol(1+i1,:);
-          text(5.6,-2+i1*0.8,ta,'fontsize',fs,'color',col,'FontWeight','b');
-          plot(tia,val,'-','color',col,'LineWidth',2);
 
-          t2a=ti0+0.5*dti;      t2b=ti0-0.5*dti;
-          plot(ti,dti*2,'-','color','c','LineWidth',2);
-          plot(t2a,proxi{ie}(ii),'-','color',ones(3,1)*0.5,'LineWidth',3-2*i1);
-          plot(t2b,x2,'-','color',[0.8 0.4 0.2],'LineWidth',3-2*i1);
-        end
-        i1=i1+1;
-      end %for ij
-      %%text(timelim(2)+1.3-loop*0.8,0.72*tsmax,[num2str(mDTW(ie),'%3.f') ' ' num2str(mPear(ie)*1E3,'%3.0f')],'fontsize',fs-5,'FontWeight','b');
     end %for ie
-
+    % -------------------------------------------------------
+    % loop over  TS
     for ie=1:numprox
       time1b{ie}=time1{ie};
       we_dtw(ie)=dtw_weigh(ie)/(1E-3+dtw_weighi(ie));
@@ -338,13 +346,14 @@ for tl=1:2
     fprintf('\t pca: %1.3f %1.3f\n',pca.cum_var(2),pca.cum_var(nmax));
     fprintf('dtw: %1.3f\n',mean(mDTW));
     mlPear(loop)=mean(mPear(ie));
-      % ------ calc PCA with weights ----------------------
-
+    
+    % ------ calc PCA with weights ----------------------
     pca_ts=pca.T;
+
+    % calc stability from temporal change in PCs
     kine=0;
     for pi=1:nmax
-      %pca = spline(time20,squeeze(pca_ts(:,pi)),tip2(itp));
-       pca_sm = movweighavg(time20*1E3,squeeze(pca_ts(:,pi)),220,40);%130,20
+       pca_sm = movweighavg(time20*1E3,squeeze(pca_ts(:,pi)),220,40); % smoothing
        pcats{pi}=pca_sm;
        dpca = diff(pca_sm);
        kine=kine+exp_var(pi)*abs(dpca);
@@ -352,11 +361,10 @@ for tl=1:2
     pca_change=-(kine-mean(kine))/std(kine);
     t_change=(time20(2)-time20(1))/2+ time20(1:end-1);
     file=sprintf('%sdtwpca/dtwpca2_%3.2f_%2.0f_%1.0f_%d.mat',scdir,timelim(2),dtw_Dist_crit,tol*100,loop);
-    save(file,'mlPear','mDTW','proxi','time1','time20','pcats','cDTW_Dist','cPears','InEur2','tol','exp_var','pca_change','t_change');
-    %%mlPear
-    % tfac=tfac*0.8;
-     %tfac=min(tfac,0.9);
+    save(file,'mlPear','mDTW','proxi','time1','time20','pcats','cDTW_Dist','cPears','InEur','tol','exp_var','pca_change','t_change');
+
   end %for loop
+
   if out
     %legend(le,num2str([1:loop]'))%'
     set(0,'DefaultFigureVisible','on')
@@ -364,7 +372,7 @@ for tl=1:2
       set(0, 'CurrentFigure', gcf(np))
       figure(np)
       set(gcf(np),'Visible','on');
-      file=sprintf('%splots/proxy_dtwp2_%03.2f_%3.2f_%d.png',scdir,threshold,timelim(2),np);
+      file=sprintf('%splots/proxy_dtwp_%03.2f_%3.2f_%d.png',scdir,threshold,timelim(2),np);
       if np==nf-1,fprintf('saving graph to %s\n',file);end
       set(gcf(np),'PaperPositionMode','auto');%,'InvertHardCopy','off'
       print(gcf(np),'-dpng','-r300', file);
