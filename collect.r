@@ -35,7 +35,8 @@ for (ri in ri0:ri1)
 
       pcl=c(pcl,pclust) # merges patch data
 
-      locs=coordinates(eurospatial$locations)
+      ##locs=coordinates(eurospatial$locations)   # for rcarbon<1.5
+      locs=st_coordinates(eurospatial$locations)  # for rcarbon>=1.5
 
       # position of sites
       lon = as.vector(locs[,1])

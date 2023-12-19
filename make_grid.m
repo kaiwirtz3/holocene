@@ -1,12 +1,10 @@
 %
-% region kriging on a grid based on cluster points
+% spatial kriging on a grid based on cluster points
 %
 % kai wirtz (hereon) Dec 2023
 %function gp = make_grid(offset,dll)
 close all
 clear all
-addpath('~/tools/m_map')
-
 load_pars; % sets common parameters (e.g., scdir, latlim, breaks)
 
 % --------------------------------------
@@ -53,7 +51,7 @@ weigh(1,1)=1;
 load seamask_norm_0.05.mat %seamask_High
 
 % load C14 dates and site info
-load(['c14mat/C14_europe']);%'lonsn','latsn','C14agesn','C14SDsn','SiteIDsn','datIDsn'
+load(['c14mat/C14_europe0']);%'lonsn','latsn','C14agesn','C14SDsn','SiteIDsn','datIDsn'
 nt=length(breaks);
 
 % number of columns and rows in plot; size
@@ -71,7 +69,9 @@ for ti=breaks
 
     % load geo-position of sites and index that links sites to clusters
     load([scdir 'mat/clusti_' num2str(ti) '_120']);
+    %%load(['../p3k14c/mat/clusti3_' num2str(ti) '_120']);
     lons = lonsn;  lats = latsn;
+    nmax = length(lons);
 
     % clear index file
     clustn=unique(clusti);
@@ -84,6 +84,7 @@ for ti=breaks
     % center position of regions
     for i=1:ncolor
       ii=find(clusti==i);
+      ii(ii>nmax)=[];
       lon=lonsn(ii); lat=latsn(ii);
       regionlon(i)=mean(lon); regionlat(i)=mean(lat);
       fprintf('%2d:%1.1f %1.1f\t',i,regionlon(i),regionlat(i));

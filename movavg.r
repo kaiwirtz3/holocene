@@ -1,9 +1,8 @@
 #
-# Moving Average Filters
+# moving average filter
 #
-
-movavg <- function(x, n) {
-    stopifnot(is.numeric(x), is.numeric(n), is.character(type))
+movavg <- function(x,n) {
+    stopifnot(is.numeric(x), is.numeric(n))
     if (length(n) != 1 || ceiling(n != floor(n)) || n <= 1)
         stop("Time window must be a single integer greater 1.")
     nx <- length(x)

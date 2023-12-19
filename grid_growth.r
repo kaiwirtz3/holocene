@@ -166,7 +166,6 @@ for (ri in ri0:ri1)
 
     ## graph settings
     ## par(oma = c(1, 0, 1, 1), mar = c(0.1, 0.1, 0.05, 0.5),mfrow=c(1,1), cex.lab=0.5,cex.sub=0.5, cex.main=1.,cex.axis=0.7)
-    # par(mar=c(1,1,2,1))
     ## background map
     plot(base,col=rgb(0.95, 0.95, 0.95),border="antiquewhite3",xlim=xrange,ylim=yrange,main=paste(transtis,"kBP ",round(rgr[ti]*1E3)))
 

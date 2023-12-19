@@ -162,4 +162,4 @@ for i=1:ncolor
 areav{tii+1}=area;
 
 % store region information in binary file
-save([scdir 'mat/regiongrid_' num2str(ti)],'val','reg','values','regs','ncolor','regionlon','regionlat','area');
+%%save([scdir 'mat/regiongrid_' num2str(ti)],'val','reg','values','regs','ncolor','regionlon','regionlat','area');

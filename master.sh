@@ -13,24 +13,17 @@ Rscript cluster.r # in parallel mode slumclust.sh
 
 # region kriging on a grid  - based on cluster points
 matlab -nodesktop -r "try; make_grid; catch; end; quit" > LogFile2 2> ErrorLogFile2
-##make_grid.m
 
 Rscript spd_growth.r  # reads clusti, writes AllPop for time slices
 #or sbatch --array=0-101 slurmspd.sh (for 6 SPD settings: 6*17=102, start with 0!)
 
 # pooled method
-Rscript spd_all.r #reads C14_europe_neo, writes AllPop_all
+Rscript spd_pooled.r #reads C14_europe0 (or C14_EA, C14_NIreland), writes AllPop_all
 
 # collects RGR from time slices
 plot_ContRGR %reads AllPop_i writes AllPop_tag_all avg_rgr_ (avg_rgr_all all major methods)  RGR_MethComp.png
 
-# plot map with proxy locations and occupation boxes
-plot_sites
-
-plot_varmap_slice %reads AllPop_i
-
-# plots and saves regional RGR ; e.g., writes Ire_rgr
-extract_rgr
+#plot_varmap_slice %reads AllPop_i
 
 # -------------------------------------
 # process climate proxy data
@@ -49,12 +42,3 @@ check_stat # reads avg_rgr_all archoccdens Us16_comp bog_std dtwpca/dtwpca_proxy
 #?? show_stat # reads target_ts_67 ; writes show_stat_.png glm_coeff_.tex
 
 plot_stat # reads target_ts_13 ; writes show_stat_.png glm_coeff_.tex
-
-#cmp_plot_Growth # loads avg_rgr_all or archoccdens (from occdens)
-                # with pvi=[10 11] compares to regional boom/busts
-
-# compares with SPD RGR  South America from Riris et al 2019
-#plot_spd_SA
-#write_ts
-
-matlab -nodesktop -r "try; master2; catch; end; quit" > LogFile2 2> ErrorLogFile2
