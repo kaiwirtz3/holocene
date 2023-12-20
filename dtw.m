@@ -1,3 +1,9 @@
+%  by Timothy Felty (2023)
+%  Dynamic Time Warping
+%  https://www.mathworks.com/matlabcentral/fileexchange/6516-dynamic-time-warping
+%  MATLAB Central File Exchange
+%
+
 function [Dist,D,k,w]=dtw(t,r)
 %Dynamic Time Warping Algorithm
 %Dist is unnormalized distance between t and r
@@ -13,7 +19,7 @@ function [Dist,D,k,w]=dtw(t,r)
 %        d(n,m)=(t(n)-r(m))^2;
 %    end
 %end
-d=(repmat(t(:),1,M)-repmat(r(:)',N,1)).^2; %this replaces the nested for loops from above Thanks Georg Schmitz 
+d=(repmat(t(:),1,M)-repmat(r(:)',N,1)).^2; %this replaces the nested for loops from above Thanks Georg Schmitz
 
 D=zeros(size(d));
 D(1,1)=d(1,1);
@@ -41,7 +47,7 @@ while ((n+m)~=2)
         m=m-1;
     elseif (m-1)==0
         n=n-1;
-    else 
+    else
       [values,number]=min([D(n-1,m),D(n,m-1),D(n-1,m-1)]);
       switch number
       case 1

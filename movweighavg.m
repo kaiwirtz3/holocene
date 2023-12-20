@@ -1,6 +1,10 @@
+%
+% moving average with distance decaying filter
+%
+% kai wirtz (2023)
+%
 function [arg]=movweighavg(times,values,window,offset)
-% [values]=movavg(times,values,window,keepnan)
-% [times values]=movavg(times,values,window,keepnan)
+
 values=reshape(values,size(times));
 ji=1;
 nut=length(times);
