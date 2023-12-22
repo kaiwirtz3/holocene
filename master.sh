@@ -34,12 +34,8 @@ matlab -nodesktop -r "try; plot_RGR; proxy_dtw; collect_ts; catch; end; quit" > 
 
 #plot_varmap_slice %reads AllPop_i
 
-glmloop #  runs GLM for boom/bust probability with 1-4 input variables
+Rscript glmloop.r #  runs GLM for boom/bust probability with 1-4 input variables
 
-
-
-# prepare time series
-check_stat # reads avg_rgr_all archoccdens Us16_comp bog_std dtwpca/dtwpca_proxydata_; writes  target_ts_
-           # creates pca-based index 'climate stability', smoothes RGR with movweighavg(...,202,50);
+# plot time series
+# check_stat # reads target_ts_0; writes  target_ts_1
 # combine climate and RGR
-#?? show_stat # reads target_ts_67 ; writes show_stat_.png glm_coeff_.tex
