@@ -37,7 +37,7 @@ ktot <- 0
 nclustsum <- 0
 
 # read matlab seamask for entire domain
-file <- 'seamask_norm_0.05.mat'
+file <- 'data/seamask_norm_0.05.mat'
 v <- readMat(file)
 dim(v$value)
 

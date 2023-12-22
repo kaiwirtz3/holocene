@@ -48,7 +48,7 @@ end
 weigh(1,1)=1;
 
 % load seamask
-load seamask_norm_0.05.mat %seamask_High
+load(['data/seamask_norm_0.05'])  %seamask_High
 
 % load C14 dates and site info
 load(['c14mat/C14_europe0']);%'lonsn','latsn','C14agesn','C14SDsn','SiteIDsn','datIDsn'

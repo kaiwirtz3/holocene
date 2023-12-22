@@ -86,7 +86,7 @@ for tagi=1:ntag
 
   % ------------------------------------------------------------------
   % save plot to PNG file
-  file=[scdir 'plots/CompRGR_' tag '.png'];
+  file=[scdir 'plots/CompRGR' tag '.png'];
   set(gcf,'PaperPositionMode','auto','Visible','on');%,'InvertHardCopy','on'
   print('-dpng','-r300', file);
 end %tagi

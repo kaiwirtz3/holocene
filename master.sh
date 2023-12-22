@@ -28,13 +28,15 @@ Rscript spd_pooled.r #reads C14_europe0 (or C14_EA, C14_NIreland), writes AllPop
 # -------------------------------------
 # process climate proxy data
 # proxy_dtw   : applies DTW ; reads paleoclimate time-series from paleoclim/ ; writes dtwpca/dtwpca2*
-matlab -nodesktop -r "try; plot_RGR; proxy_dtw; catch; end; quit" > LogFile 2> ErrorLogFile
+# integrate and smooth most time-series
+# collect_ts
+matlab -nodesktop -r "try; plot_RGR; proxy_dtw; collect_ts; catch; end; quit" > LogFile 2> ErrorLogFile
 
 #plot_varmap_slice %reads AllPop_i
 
-collect_ts # integrate and smooth most time-series
-
 glmloop #  runs GLM for boom/bust probability with 1-4 input variables
+
+
 
 # prepare time series
 check_stat # reads avg_rgr_all archoccdens Us16_comp bog_std dtwpca/dtwpca_proxydata_; writes  target_ts_

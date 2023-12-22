@@ -15,8 +15,9 @@ scdir='out/'
 #binv=c(50,200,100,100)
 
 # pooled continent/region
-cc='europe0'; news='_EU'
-#cc='EA';news='_EA' cc='NIreland';news='_Ire'
+#cc='europe0'; news='_EU'
+cc='EA';news='_EA'
+#cc='NIreland';news='_Ire'
 
 # exponetial filter for smoothing
 dt = 20
