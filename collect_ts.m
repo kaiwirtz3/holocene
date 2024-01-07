@@ -1,3 +1,4 @@
+str%
 % merges DTW time segments data
 %  and includes all other times series (e.g. RGR, solar forcing)
 %
@@ -35,7 +36,7 @@ legdat{3} = 'void';
 i0=4;
 % ------------------------------------------------------------------
 %  RGR East Asia (China+)
-file = [scdir 'mat/AllPop_EA_Bin100_all.mat'];
+file = [scdir 'mat/AllPop_EA_NoNorm_Bin100_all.mat'];
 if exist(file)
   load(file); %poptime = tm, ymv = ymv,trgr = tirgr,rgr = rgrv,nreg = nregions
   trgr = trgr*1E-3;
@@ -44,7 +45,7 @@ if exist(file)
   it = find(time >= (trgr(1)) & time <= (trgr(end)) );
   ts = interp1(trgr,rgr,time(it),'linear','extrap');
   ts = movweighavg(time(it)*1E3,ts,tmov,toff)*1E3; %
-  dat(it,i0)  =  movweighavg(time(it)*1E3,ts,tmov,toff)*1E3;  %2nd smooth
+  dat(it,i0)  =  movweighavg(time(it)*1E3,ts,tmov,toff);  %2nd smooth
 end
 legdat{i0} = ['RGR East Asia'];% (detrend)
 i0=i0+1;
