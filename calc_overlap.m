@@ -4,7 +4,7 @@
 % coefficients for linear filter
 
 fi=0;tot=0;tweigh=0;
-ii2=find(tip2<tmax);
+ii2=find(tip2<=tmax & tip2>=3);
 crit=0.5*std(avgrde(ii2));
 %%fprintf('crit=%1.1f\n',crit*1E3);
 dtt=abs(tip2(2)-tip2(1));

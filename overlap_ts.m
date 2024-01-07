@@ -28,7 +28,7 @@ nrgr=length(spr);
 % ------ common time vector
 dt  = 0.010;
 time= timelim(1):dt:timelim(2);
-tip1=dat(:,1)'; %'
+tip1= dat(:,1)'; %'
 
 % ------------------------------------------------------------------
 % ------- loop over RGR reconstructions and compared TS
@@ -40,10 +40,11 @@ for ic=1:nrgr
   ioff=spr(ic);
   avgrde=dat(:,ioff);%
   if nanstd(avgrde)>0.1 avgrde=avgrde*1E-3; end %change units to ka-1
-  ii=find(~isnan(avgrde')  & tip1<=timelim(2) & tip1>=timelim(1)); %& ~isnan(change)'
-  tip2=tip1(ii);avgrde=avgrde(ii);
-  tip2=tip2'; %'
-
+  ii=find(~isnan(avgrde') & tip1<=timelim(2) & tip1>=3); % timelim(1)
+  tip2=tip1(ii)';
+  avgrde=avgrde(ii);
+tip2(1)
+tip2(end)
   str =regexprep(legdat{ioff},'_','');
 
   % ------- plot settings
@@ -98,7 +99,7 @@ for ic=1:nrgr
 
 % ------- calc (trimmed) correlation
   x1=avgrde; x2=cvar;
-  ii1=find(~isnan(x1) & ~isnan(x2) & dat(ii,1)<tmax);
+  ii1=find(~isnan(x1) & ~isnan(x2) & dat(ii,1)<=tmax & dat(ii,1)>=3);
   [r,p1]=corrcoef(x1(ii1),x2(ii1)); r=r(1,2); p=p1(1,2);
 
   % ------- store stats

@@ -33,13 +33,13 @@ if(i10>i01+1)
 end
 
 % ------- overlap of RGR phases with 2nd variable
-isp1=find(tip1>=min(tip2(isp)) & tip1<=max(tip2(isp)));
+isp1=find(tip2>=min(tip2(isp)) & tip2<=max(tip2(isp)));
 ts=reshape(ts,1,length(ts));
 tsi=ts(isp1);
 
 ix=find(sign(tsi)~=sgp);
 tsi(ix)=0;
-xx=tip1(isp1); %
+xx=tip2(isp1); %
 xx=reshape(xx,1,length(xx));
 nl1=length(isp1);
 
