@@ -82,14 +82,18 @@ proxy_dtw.m     # applies DTW writes dtw_proxydata
   (uses dtw.m by T. Felty, movweighavg.m)
 
 collect_ts.m    # integrate and smooth time-series, merges DTW time segments data
-                # and includes all other times series (e.g. RGR, solar forcing)
-  (uses movavg.m, movweighavg.m) # reads AllPop_EA_all avg_rgr_ data/*
+                # and includes other times series (e.g. RGR, solar forcing)
+  (uses movavg.m, movweighavg.m) # reads AllPop_EA_all avg_rgr_ data/* writes target_ts_0
 
 # collects RGR from time slices
 # plot_varmap_slice %reads AllPop_i
 
 glmloop.r       # run GLM model for different sets of input variables
    (uses do_lgm.r)  # reads target_ts_0, writes glmres*
+
+overlap_ts.m    # calc and plot overlap between time-series
+   (uses add_logitres.m and calc_overlap.m)
+
 -------------------------------------------------------
 LICENSE
 -------
