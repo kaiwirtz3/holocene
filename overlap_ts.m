@@ -21,8 +21,6 @@ col2=[0.95 0.4 0.1]; % colour of 2nd plot
 
 spv=[4:14 6 6]; % indices of compared TS, see legdat
 spr=[ones(1,11)*2 4 5];% indices of RGR reconstr., see legdat
-spv=[6 6];
-spr=[4 5];
 stdc=9E-5;
 nrgr=length(spr);
 % ------ common time vector
@@ -65,7 +63,7 @@ tip2(end)
   j=spv(ic);
   cvar = dat(ii,j);
   scal = sdf/nanstd(cvar);
-  ts=cvar*scal;
+  ts   = cvar*scal;
   % ------- calculate overlap
   calc_overlap % calculate overlap and mark phases by bars
   %fprintf('\n%s\t%1.1f\n',str,50*tweigh/((tmax-3)/dt));
