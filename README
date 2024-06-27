@@ -8,27 +8,41 @@ Code and data availability:
 https://github.com/kaiwirtz3/holocene
 
 The MATLAB and R code enables standalone or parallel processing.
-For example, parallel processing of dingle patch jobs can be invoked on HPC by "sbatch --array=1-64 slurm.sh"
+For example, parallel processing of batch jobs can be invoked on HPC by "sbatch --array=1-64 slurm.sh"
 
 -------------------------------------------------------
 Requirenments:
   MATLAB
-   including packages 'M_MAP' and 'pca_toolbox';
+   needs packages: 'M_MAP' and 'pca_toolbox'
    insert/correct installation path in 'addpath('~/tools/m_map')' found in the header of some MATLAB-scripts (foremost load_par.m),
    or 'addpath('~/tools/pca_toolbox')' in proxy_dtw.m
 
   R
-   including libraries:
-      rworldmap, rcarbon, R.matlab, RColorBrewer, cluster, sp/sf
+   needs libraries: rworldmap, rcarbon, R.matlab, RColorBrewer, cluster, sp/sf
    for rcarbon version <1.5 see comments in grid_growth.r ("spweights")
 
 -------------------------------------------------------
 Input data
   (in directories c14mat/ paleoclim/ and data/)
 
-  collected radiocarbon dates for Europe at a coarse grid in c14mat/C14_europe_[1-64].mat
-   c14mat/C14_europe0.mat:  radiocarbon dates for Europe pooled in
-   c14mat/C14_EA.mat:       radiocarbon dates for East Asia pooled in  c14mat/C14_EA.mat
+  Note that the input data are already available in pre-processed binary (MATLAB) format.
+
+  The  C14 dates from the p3k14c dataset were downloaded in Mar 2023 from
+  https://www.nature.com/articles/s41597-022-01118-7/tables/4.
+  Updates can be found at https://www.p3k14c.org
+  The p3k14c csv/xls file can be converted by "read_dASIS.m" (see outcommented settings) to
+  "c14mat/p3k14c.mat" (needed by "merge_C14data.m")
+  The new compilation refers to the database dASIS which in turn collects previous databases
+  and adds own dates compiled by Gronenborn/Antunes at LEIZA Mainz
+  The xls file "c14mat/C14_dASIS.xlsx" was converted by runing "read_dASIS.m"
+  to "c14mat/C14_dASIS.mat"
+  Using the script "merge_C14data.m", all binary files for pooled and gridded were produced
+
+   c14mat/C14_europe_[1-64].mat:  radiocarbon dates for Europe on a coarse grid
+   c14mat/C14_europe0.mat:        radiocarbon dates for Europe pooled
+   c14mat/C14_[cont].mat:         radiocarbon dates for continents
+   c14mat/C14_NIreland.mat:       radiocarbon dates for North Ireland
+   c14mat/C14_dASIS.xlsx:         compilation of (dASIS) C14v dates in XLS format
 
   collected paleoclimate proxy time-series and meta-info in
     paleoclim/InEur_27_920.mat:   index ('InEur') to proxies in EU domain
@@ -53,7 +67,7 @@ for running R-scripts (e.g."r-example.r"):  start 'R' terminal and type 'source(
 for running MATLAB-scripts (e.g."m-example.m"): start MATLAB terminal and type 'm-example'
                                 or from (bash) terminal, type  'matlab -nodesktop -r "try; m-example; catch; end; quit" '
 --------------------------------------------------------------------
-sequence of script execution  and dependencies (see also master.sh)
+sequence of script execution and dependencies (see also master.sh)
 
 grid_growth.r   # calculates spatial statistics of SPDs on a 4°x4° grid
 
