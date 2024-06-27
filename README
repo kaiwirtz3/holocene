@@ -53,6 +53,8 @@ Input data
         or "Source" for bibtex-key of original reference
       evinfo.time:  cells with vectors containing the time values of a record
       evinfo.value: cells with vectors containing the normalized values
+    Note that the MATLAB structure 'evinfo' and its fields can be converted into an R dataframe
+     using the R.matlab package
 
   misc time-series or fields
     SA_spd_rgr.mat: RGR South America from digitized and calculated from Riris et al 2019
