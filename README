@@ -46,7 +46,13 @@ Input data
 
   collected paleoclimate proxy time-series and meta-info in
     paleoclim/InEur_27_920.mat:   index ('InEur') to proxies in EU domain
-    paleoclim/proxydescription_488_0_11.00_1.70.mat: structure with all paleoclimate info
+    paleoclim/proxydescription_488_0_11.00_1.70.mat: MATLAB structure ("evinfo") with all paleoclimate info
+      for 209 records. used indices areigven by 'InEur'
+      meta-info:
+       e.g., "Proxy" for proxy type, "Plotname" for site name, "Latitude", "Longitude"
+        or "Source" for bibtex-key of original reference
+      evinfo.time:  cells with vectors containing the time values of a record
+      evinfo.value: cells with vectors containing the normalized values
 
   misc time-series or fields
     SA_spd_rgr.mat: RGR South America from digitized and calculated from Riris et al 2019
