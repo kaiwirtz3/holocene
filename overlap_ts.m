@@ -15,12 +15,12 @@ add_logitres
 % graphical parameters
 fs=22;          % fontsize
 y0=0.18;        % y-offset
-sdf=0.5;        % scaling of 2nd curve
+sdf=0.7;        % scaling of 2nd curve
 yl=[-1.4 1.85]; % limits
 col2=[0.95 0.4 0.1]; % colour of 2nd plot
 
-spv=[4:14 6 6]; % indices of compared TS, see legdat
-spr=[ones(1,11)*2 4 5];% indices of RGR reconstr., see legdat
+spv=[6:18 ones(1,6)*10]; % indices of compared TS, see legdat array or txt file 'legdat.dat'
+spr=[ones(1,13)*2 4:9];% indices of RGR reconstr., see legdat
 stdc=9E-5;
 nrgr=length(spr);
 % ------ common time vector
@@ -41,8 +41,6 @@ for ic=1:nrgr
   ii=find(~isnan(avgrde') & tip1<=timelim(2) & tip1>=3); % timelim(1)
   tip2=tip1(ii)';
   avgrde=avgrde(ii);
-tip2(1)
-tip2(end)
   str =regexprep(legdat{ioff},'_','');
 
   % ------- plot settings
@@ -65,6 +63,7 @@ tip2(end)
   scal = sdf/nanstd(cvar);
   ts   = cvar*scal;
   % ------- calculate overlap
+  % TODO: re-normalize RGR trajectory
   calc_overlap % calculate overlap and mark phases by bars
   %fprintf('\n%s\t%1.1f\n',str,50*tweigh/((tmax-3)/dt));
 

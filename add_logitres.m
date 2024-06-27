@@ -1,6 +1,9 @@
+%
 % load logit model results and
-%  store loe-high-pass filtered probability difference to matrix
-
+%  store low-high-pass filtered probability difference to matrix
+%
+% kai wirtz (hereon) Dec 2023
+%
 load([scdir 'target_ts_0.mat']); %'dat','legdat'
 nd0 = length(legdat); %size of old data matrix
 
@@ -45,3 +48,12 @@ for nv=1:3
     end %if i==3
   end %for i
 end %for nv
+
+% write out variables and indices
+fid=fopen('legdat.dat','w');
+j=floor(length(legdat)/2);
+for i=1:j
+  fprintf(fid,'%2d %25s\t\t',i,legdat{i});  fprintf(fid,'%2d %23s\n',j+i,legdat{j+i});
+  fprintf('%2d %25s\t\t',i,legdat{i});  fprintf('%2d %23s\n',j+i,legdat{j+i});
+end
+fclose(fid);

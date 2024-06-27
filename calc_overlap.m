@@ -2,9 +2,9 @@
 % ------- calculate overlap
 
 % coefficients for linear filter
-
+tmaxo=8.15;
 fi=0;tot=0;tweigh=0;
-ii2=find(tip2<=tmax & tip2>=3);
+ii2=find(tip2<=tmaxo & tip2>=3);
 crit=0.5*std(avgrde(ii2));
 %%fprintf('crit=%1.1f\n',crit*1E3);
 dtt=abs(tip2(2)-tip2(1));
@@ -33,7 +33,7 @@ for i=1:2
   [pg pgi]=findpeaks(tip2,avgrde*sgp,stdc,9); %0.667
 
   % delete peaks outside time-window
-  ii2=find(pg<3 | pg>tmax);
+  ii2=find(pg<3 | pg>tmaxo);
   %fprintf('delete %d peaks:\t',length(ii));
   if ii2, pg(ii2)=[]; pgi(ii2)=[]; end
 
@@ -91,8 +91,8 @@ for i=1:2
   %% pgv{i}=pg;
 end % for i=1:2
 
-ii2 = find(tip1<tmax & tip1>=3);
+ii2 = find(tip1<tmaxo & tip1>=3);
 to2 = nansum(abs(ts(ii2)));
-fr  = fi/(to2*0.935); % match factor of equal periodic signals
+fr  = fi/(to2*0.92); % match factor of equal periodic signals
 
 %fprintf('fi=%1.3f\tsum %1.2f %1.2f\tfr=%1.3f\n',fi*1E3,tot*1E3,to2*1E3,fr*100);

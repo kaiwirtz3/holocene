@@ -46,10 +46,10 @@ Input data
 
   collected paleoclimate proxy time-series and meta-info in
     paleoclim/InEur_27_920.mat:   index ('InEur') to proxies in EU domain
-    paleoclim/proxydescription_488_0_11.00_1.70.mat: MATLAB structure ("evinfo") with all paleoclimate info
-      for 209 records. used indices areigven by 'InEur'
+    paleoclim/proxydescription_488_0_11.00_1.70.mat: MATLAB structure ("evinfo") with paleoclimate info
+      for 209 global records. the 98 used indices (for Europe) are given by 'InEur'
       meta-info:
-       e.g., "Proxy" for proxy type, "Plotname" for site name, "Latitude", "Longitude"
+       e.g., "Proxy" for proxy type (e.g. d18O), "Plotname" for site name, "Latitude", "Longitude"
         or "Source" for bibtex-key of original reference
       evinfo.time:  cells with vectors containing the time values of a record
       evinfo.value: cells with vectors containing the normalized values
@@ -112,12 +112,12 @@ collect_ts.m    # integrate and smooth time-series, merges DTW time segments dat
 
 glmloop.r       # run GLM model for different sets of input variables
    (uses do_lgm.r)  # reads target_ts_0, writes glmres*
-
+add_logitres.m  # add logit model results to matrix
 overlap_ts.m    # calc and plot overlap between time-series
    (uses add_logitres.m and calc_overlap.m)
 
 -------------------------------------------------------
-LICENSE
+LICENSE:
 -------
 If not stated otherwise, the entire analysis software is licensed under
   the GNU Public License version 3 or later.
@@ -125,5 +125,5 @@ If not stated otherwise, the entire analysis software is licensed under
 
 -------------------------------------------------------
 Documentation:
-  see text and equations in Material and Methods of Wirtz et al, subm.
+  see text and equations in Material and Methods of Wirtz et al, Multicentennial cycles in continental demography synchronous with solar activity and climate stability, subm.
 --------------

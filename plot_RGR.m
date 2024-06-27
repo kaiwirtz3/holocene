@@ -34,7 +34,7 @@ for tagi=1:ntag
   scs(regexp(scs,'[_]'))=[];
 
   % load pooled RGR (for Europe)
-  load([scdir 'mat/AllPop_EU' tag  '_all.mat']); %poptime, ym,trgr,rgr,nreg
+  load([scdir 'mat/AllPop_europe0' tag  '_all.mat']); %poptime, ym,trgr,rgr,nreg
   % bring both rgr estimates on same timeline
   rgri = interp1(flip(trgr),flip(rgr),rtim,'linear','extrap');
 

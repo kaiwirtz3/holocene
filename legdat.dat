@@ -1,0 +1,9 @@
+ 1                      time		10                   - TSI
+ 2       area smooth+detrend		11     bog tree ring width
+ 3                      void		12 tree growth homogeneity
+ 4                 RGR EAsia		13       climate stability
+ 5              RGR NAmerica		14            climate PCA1
+ 6              RGR SAmerica		15            climate PCA2
+ 7                RGR Africa		16 logit model 3V (climate+)
+ 8             RGR Australia		17 logit model 2V (climate)
+ 9         RGR South America		18 logit model 1V (autoregressive lags=350a+210a)
