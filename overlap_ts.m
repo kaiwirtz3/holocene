@@ -9,7 +9,7 @@ tmax=8.9; % max time for statistical measures (ka BP) and graphical output
 tavg=1.5; % time window moving average
 
 % load logit model results and
-%  store loe-high-pass filtered probability difference to data matrix
+%  store low-high-pass filtered probability difference to data matrix
 add_logitres
 
 % graphical parameters

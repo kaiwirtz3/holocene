@@ -112,7 +112,8 @@ collect_ts.m    # integrate and smooth time-series, merges DTW time segments dat
 
 glmloop.r       # run GLM model for different sets of input variables
    (uses do_lgm.r)  # reads target_ts_0, writes glmres*
-add_logitres.m  # add logit model results to matrix
+   
+[ add_logitres.m  # add logit model results to matrix ]
 overlap_ts.m    # calc and plot overlap between time-series
    (uses add_logitres.m and calc_overlap.m)
 

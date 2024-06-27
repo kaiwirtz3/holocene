@@ -39,4 +39,4 @@ Rscript glmloop.r #  runs GLM for boom/bust probability with 1-4 input variables
 # plot time series
 # reads target_ts_0; writes  target_ts_1
 # combine climate and RGR
-matlab -nodesktop -r "try; plot_RGR; add_logitres; overlap_ts; catch; end; quit" > LogFile 2> ErrorLogFile
+matlab -nodesktop -r "try; plot_RGR; overlap_ts; catch; end; quit" > LogFile 2> ErrorLogFile
