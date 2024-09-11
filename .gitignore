@@ -6,5 +6,11 @@ ErrorLogFile
 LogFile
 .RData
 .Rhistory
-out/area_0.05_3000_9800.mat
 node_modules
+out/area_0.05_3000_9800.mat
+out/avg_rgr_all.mat
+out/glmres_RGRS_RGRS.mat
+out/glmres_RGRS_RGRS_area.mat
+out/glmres_area_area.mat
+out/pca_0.mat
+out/target_ts_0.mat

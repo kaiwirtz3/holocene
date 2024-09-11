@@ -1,12 +1,101 @@
+% This script calculates Dynamic Time Warping (DTW) of paleoclimate proxy time-series.
+% It processes time-series data, performs Principal Component Analysis (PCA),
+% and saves the results, including DTW distances and PCA components, into a MATLAB binary file.
+%
 % SPDX-FileCopyrightText: 2023-2024 Helmholtz-Zentrum hereon GmbH
 % SPDX-FileContributor: Kai W. Wirtz <kai.wirtz@hereon.de>
 % SPDX-License-Identifier: GPL-3.0-or-later
 
-%
-% calculates Dynamic Time Warping  (DTW) of paleoclimate proxy time-series
-%
-% kai wirtz (HZG) 2023
-%
+% Input Files:
+% - paleoclim/InEur_27_920.mat: MATLAB file containing paleoclimate proxy time-series
+% - paleoclim/proxydescription_488_0_11.00_1.70.mat: MATLAB file containing meta-info for proxies
+
+% Output Files:
+% - out/dtwpca/dtwpca2_<timeLimits(2)>_<dtw_Dist_crit>_<tol*100>_<loop>.mat: MATLAB binary file containing DTW and PCA results
+
+% Variables:
+% - dtw_Dist_crit: DTW distance criterion
+% - tol, tol2, dtol: Time tolerances
+% - out: Flag for graphical output
+% - nmax: Maximum number of principal components in PCA
+% - tfac: Time factor for adjustments
+% - ndbin: Number of bins for distance calculations
+% - ppcol: Color map for plotting
+% - fs: Font size for plotting
+% - lw: Line width for plotting
+% - ncol, nrow: Number of columns and rows for plot display
+% - dxp, dyp: Plot display dimensions
+% - markerColors: Colors for markers in plots
+% - dt0: Time step for time vectors
+% - timeLimitsv: Time limits for segments
+% - tsmax: Maximum time segment
+% - file, evinfofile: Filenames for input data
+% - timeLimits: Current time limits for processing
+% - time2, time20: Time vectors
+% - nt: Length of time vector
+% - tmin, tmax: Minimum and maximum times for time-series
+% - numprox: Number of proxies
+% - lons, lats: Longitude and latitude of proxies
+% - vli: Length of InEur vector
+% - wps, match: Weight and match vectors
+% - matchInd: Match index matrix
+% - cDTW_Dist, cDTW_sign, cPears, cLocD: Matrices for DTW distances, signs, Pearson correlations, and local distances
+% - iv, ei: Indices for iteration and event
+% - datprox: Data matrix for proxies
+% - i, tim, ti, val: Indices and values for time-series
+% - scs, ta: Strings for proxy names and tags
+% - tmax2, tmin2: Maximum and minimum times for proxies
+% - it, tiu, ia, ic: Indices for time vectors
+% - time1, proxi, time0, time1b: Time and proxy data vectors
+% - x2: Interpolated and normalized proxy data
+% - dpi: Index vector for proxies
+% - pca: PCA model
+% - we_pca, we_dtw: Weight vectors for PCA and DTW
+% - loop, out2: Loop index and output flag
+% - nf: Figure index for plotting
+% - datproxw: Weighted data matrix for proxies
+% - dtw_weigh, dtw_weighi: Weight vectors for DTW
+% - np: Number of valid time-series
+% - iy, ix: Indices for plot positions
+% - cs, csd, cDTW_D, cDTW_k: Cell arrays for correlation, distance, DTW distances, and warping paths
+% - dists: Distance vector
+% - deltat, deltaw: Delta time and weight vectors
+% - i2, j, dist: Indices and distance for compared time-series
+% - tmax, tmin: Maximum and minimum times for compared time-series
+% - itj: Indices for time vectors
+% - dtw_Dist, r, wp, w, li, sign: DTW distance, correlation, warping path, length, and sign
+% - tiu, ia, ic: Indices for unique time vectors
+% - tio, val: Time and value vectors for interpolation
+% - weigh: Weight for DTW
+% - deltat, deltaw: Delta time and weight vectors
+% - itj0, itj1: Indices for time vectors
+% - cDTW_w, cDTW_sign, cPears, cLocD: Cell arrays for DTW warping paths, signs, Pearson correlations, and local distances
+% - ti, x2: Time and proxy data vectors
+% - ind, vs, vi: Indices and sorted values for DTW distances
+% - mDTW, mPear: Mean DTW distances and Pearson correlations
+% - ii: Indices for delta weights
+% - del, delm, ff: Delta values and factors
+% - delmax: Maximum delta values
+% - dilt: Delta time vector
+% - le: Line handles for plotting
+% - dt: Delta time vector for sorting
+% - nl: Length of delta time vector
+% - pca0: Initial PCA model
+% - exp_var: Explained variance for PCA
+% - pwei: Weight vector for PCA
+% - m, ii: Sorted weights and indices for PCA
+% - x: Normalized weights for PCA
+% - we_pca: Weight vector for PCA
+% - mlPear: Mean Pearson correlations
+% - pca_ts: PCA time-series
+% - kine: Kinetic energy for PCA stability
+% - pca_sm: Smoothed PCA time-series
+% - pcats: Cell array for PCA time-series
+% - dpca: Delta PCA time-series
+% - pca_change: PCA change vector
+% - t_change: Time change vector
+% - file: Filename for output data
+
 clear all;
 addpath('~/tools/mlabtools/pca_toolbox_1.5')
 
@@ -27,15 +116,15 @@ fs    = 20; lw=1;
 ncol  = 4; % plot display: number of columns
 nrow  = 4; % plot display: number of rows
 dxp=0.9/ncol;dyp=0.89/nrow;
-mcol(1,:)=[1 0.5 0]; mcol(2,:)=[0 0.5 1];
+markerColors(1,:)=[1 0.5 0]; markerColors(2,:)=[0 0.5 1];
 
 % time segments
 dt0=0.01;
-timelimv=[[2.8 6.2];[5.8 9.5]];
+timeLimitsv=[[2.8 6.2];[5.8 9.5]];
 tsmax=3.;
 
 %load_pars;
-scdir='out/';
+outputDirectory='out/';
 edir ='paleoclim/';
 
 % load paleoclimate proxy time-series and meta-info
@@ -47,10 +136,10 @@ load(evinfofile); % into struct evinfo
 % -------------------------------------------------------
 % loop over time segments
 for tl=1:2
-  timelim=timelimv(tl,:);
+  timeLimits=timeLimitsv(tl,:);
   % time vectors
-  time2=(timelim(1)-tol):dt0:(timelim(2)+tol);
-  time20=(timelim(1)):dt0:(timelim(2));
+  time2=(timeLimits(1)-tol):dt0:(timeLimits(2)+tol);
+  time20=(timeLimits(1)):dt0:(timeLimits(2));
   nt=length(time2)-1;
 
   % time range of TS
@@ -171,13 +260,13 @@ for tl=1:2
       it=find(time1{ie}>=tmin2{ie} & time1{ie}<=tmax2{ie});
       if out & out2
         gca = subplot('Position',[0.05+ix*1.05*dxp 0.07+(iy*1.05)*dyp dxp dyp]);
-        set(gca,'YLim',[-1 1]*tsmax,'XLim',timelim,'Box','on','fontsize',fs,'XDir','reverse');
+        set(gca,'YLim',[-1 1]*tsmax,'XLim',timeLimits,'Box','on','fontsize',fs,'XDir','reverse');
       if (loop==1) % plot only few iterations
         hold on
         %%plot(tim,evinfo.value{i},'-','color',ones(3,1)*0.,'LineWidth',4);
         plot(time1{ie}(it),proxi{ie},'-','color',ones(3,1)*0.,'LineWidth',3);
 
-        text(mean(timelim)*1.0,0.91*tsmax,ta{ie},'HorizontalAlignment','center','fontsize',fs,'FontWeight','b');
+        text(mean(timeLimits)*1.0,0.91*tsmax,ta{ie},'HorizontalAlignment','center','fontsize',fs,'FontWeight','b');
         text(3.9,0.91*tsmax,num2str(ie),'HorizontalAlignment','center','fontsize',fs,'FontWeight','b','Color','w','BackgroundColor','k');
         if iy>0, set(gca,'XTickLabel',[]); end
         end
@@ -351,7 +440,7 @@ for tl=1:2
     fprintf('\t pca: %1.3f %1.3f\n',pca.cum_var(2),pca.cum_var(nmax));
     fprintf('dtw: %1.3f\n',mean(mDTW));
     mlPear(loop)=mean(mPear(ie));
-    
+
     % ------ calc PCA with weights ----------------------
     pca_ts=pca.T;
 
@@ -365,7 +454,7 @@ for tl=1:2
     end
     pca_change=-(kine-mean(kine))/std(kine);
     t_change=(time20(2)-time20(1))/2+ time20(1:end-1);
-    file=sprintf('%sdtwpca/dtwpca2_%3.2f_%2.0f_%1.0f_%d.mat',scdir,timelim(2),dtw_Dist_crit,tol*100,loop);
+    file=sprintf('%sdtwpca/dtwpca2_%3.2f_%2.0f_%1.0f_%d.mat',outputDirectory,timeLimits(2),dtw_Dist_crit,tol*100,loop);
     save(file,'mlPear','mDTW','proxi','time1','time20','pcats','cDTW_Dist','cPears','InEur','tol','exp_var','pca_change','t_change');
 
   end %for loop
@@ -377,7 +466,7 @@ for tl=1:2
       set(0, 'CurrentFigure', gcf(np))
       figure(np)
       set(gcf(np),'Visible','on');
-      file=sprintf('%splots/proxy_dtwp_%03.2f_%3.2f_%d.png',scdir,threshold,timelim(2),np);
+      file=sprintf('%splots/proxy_dtwp_%03.2f_%3.2f_%d.png',outputDirectory,threshold,timeLimits(2),np);
       if np==nf-1,fprintf('saving graph to %s\n',file);end
       set(gcf(np),'PaperPositionMode','auto');%,'InvertHardCopy','off'
       print(gcf(np),'-dpng','-r300', file);

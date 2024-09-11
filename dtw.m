@@ -1,9 +1,9 @@
 % SPDX-FileCopyrightText: 2006-2024 Timothy Felty
-% SPDX-FileContributor: Timothy Felty 
+% SPDX-FileContributor: Timothy Felty
 % SPDX-License-Identifier: LicenseRef-TimothyFelty
-% 
+%
 %  Dynamic Time Warping
-%  https://www.mathworks.com/matlabcentral/fileexchange/6516-dynamic-time-warping
+%  https://www.mathworks.com/matlalphabetentral/fileexchange/6516-dynamic-time-warping
 %  MATLAB Central File Exchange
 %
 

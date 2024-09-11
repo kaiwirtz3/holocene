@@ -1,18 +1,63 @@
+% This script calculates and plots the Fast Fourier Transform (FFT) of time-series data.
+% It processes data from a MATLAB file, computes the FFT, and generates plots for different variables.
+% The script also saves the processed data and plots to files.
+%
 % SPDX-FileCopyrightText: 2023-2024 Helmholtz-Zentrum hereon GmbH
 % SPDX-FileContributor: Kai W. Wirtz <kai.wirtz@hereon.de>
 % SPDX-License-Identifier: GPL-3.0-or-later
-%
-% Calculate and plot Fast Fourier Transform (FFT) of time-series
 
-% Load common parameters (scdir, ...)
+% Input files:
+% - <outputDirectory>/target_ts_19.mat
+
+% Output files:
+% - <outputDirectory>/plots/fft_<subplotIndex>.png
+
+% Variables:
+% - labelLetters: Letters for subplot labels
+% - numColumns, numRows: Number of columns and rows for subplots
+% - plotWidth, plotHeight: Width and height of each subplot
+% - lineColors, lineColors2: Colors for plotting lines
+% - fontSize: Font size for plots
+% - tickMarks: Tick marks for the x-axis
+% - timeMax: Maximum time for valid data
+% - selectedVariables: Indices of selected variables for FFT
+% - timePeriod: Time periods for FFT calculation
+% - figureHandle: Handle for the figure
+% - subplotIndex: Index for the current subplot
+% - colIndex, rowIndex: Column and row indices for subplots
+% - legendHandles, legendLabels: Handles and labels for the legend
+% - subplotPosition: Position of the subplot
+% - validIndices: Indices of valid data points
+% - numSubVars: Number of sub-variables
+% - currentVar: Current variable index
+% - dataIndices: Indices of data points for the current variable
+% - timeSeriesData: Time-series data for the current variable
+% - labelStr: Label string for the current variable
+% - fixedPlot: Flag for fixed plot
+% - plotColor: Color for the plot
+% - samplingFreq: Sampling frequency for FFT
+% - numPoints: Number of data points
+% - fftData: FFT data
+% - powerDensity: Power density of the FFT
+% - freq: Frequency vector
+% - logPowerDensity: Logarithm of the power density
+% - period: Period vector
+% - power: Power vector
+% - interpolatedPower: Interpolated power for plotting
+% - smoothedPower: Smoothed power for plotting
+% - timePeriod0, powerSpectrum0: Time period and power spectrum for reference
+% - legendHandle: Handle for the legend
+% - outputFile: Filename for saving the plot
+
+% Load common parameters (outputDirectory, ...)
 load_pars;
 
 % Load time-series data from MATLAB file
-dataFile = sprintf('%starget_ts_19.mat', scdir);
+dataFile = sprintf('%starget_ts_19.mat', outputDirectory);
 load(dataFile); % 'dat', 'legdat'
 
 % Graphical settings
-labelLetters = 'abcdef';
+labelLetters = 'alphabetdef';
 numColumns = 2;
 numRows = 3;
 plotWidth = 0.86 / numColumns;
@@ -170,6 +215,6 @@ for subplotIndex = 0:(size(selectedVariables, 1) - 1)
 end
 
 % Save the plot
-outputFile = sprintf('%splots/fft_%d.png', scdir, subplotIndex);
+outputFile = sprintf('%splots/fft_%d.png', outputDirectory, subplotIndex);
 set(gcf, 'PaperPositionMode', 'auto', 'InvertHardCopy', 'off');
 print('-dpng', '-r300', outputFile);

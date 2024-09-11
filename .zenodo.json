@@ -1,66 +1,77 @@
 {
-    "access_right": "open",
-    "communities": [
-        {
-            "identifier": "zenodo"
-        }
-    ],
-    "contributors": [
-        {
-            "affiliation": "Helmholtz-Zentrum Hereon",
-            "name": "Lemmen, Carsten",
-            "orcid": "0000-0003-3483-6036",
-            "type": "ProjectMember"
-        },
-        {
-            "affiliation": "Leibniz-Institut für Archäologie",
-            "name": "Antunes, Nicolas",
-            "orcid": "0000-0002-8894-2283",
-            "type": "DataCollector"
-        },
-        {
-            "affiliation": "Leibniz-Institut für Archäologie",
-            "name": "Gronenborn, Detlef",
-            "orcid": "0000-0002-6467-5643",
-            "type": "DataCurator"
-        }
-    ],
-    "creators": [
-        {
-            "affiliation": "Helmholtz-Zentrum Hereon",
-            "name": "Wirtz, Kai W.",
-            "orcid": "0000-0002-6972-3878"
-        }
-    ],
-    "description": "Multicentennial cycles in continental demography synchronous with solar activity and climate stability",
-    "journal_title": "Nature Communications ",
-    "journal_volume": "in revision",
-    "keywords": [
-        "Human occupation",
-        "Holocene",
-        "Cyclicity",
-        "Density dependent mortality",
-        "Climatic shifts",
-        "Demographic growth"
-    ],
-    "language": "en",
-    "license": "GPL-3.0-or-later",
-    "references": [
-        "Wirtz et al, Multicentennial cycles in continental demography synchronous with solar activity and climate stability, subm."
-    ],
-    "related_identifiers": [
-        {
-            "identifier": "10.5281/zenodo.10467364",
-            "relation": "isNewVersionOf",
-            "resource_type": "software",
-            "scheme": "doi"
-        },
-        {
-            "identifier": "https://github.com/kaiwirtz3/holocene",
-            "relation": "isDerivedFrom",
-            "resource_type": "software",
-            "scheme": "url"
-        }
-    ],
-    "title": "Multicentennial cycles in continental demography synchronous with solar activity and climate stability"
+  "access_right": "open",
+  "communities": [
+    {
+      "identifier": "zenodo"
+    },
+    {
+      "identifier": "Demography"
+    },
+    {
+      "identifier": "Archaeology"
+    },
+    {
+      "identifier": "Neolithic Archaeology"
+    },
+    {
+      "identifier": "Nature Communications"
+    }
+  ],
+  "contributors": [
+    {
+      "affiliation": "Deutsches Archäologisches Institut",
+      "name": "Antunes, Nicolas",
+      "orcid": "0000-0002-8894-2283",
+      "type": "DataCollector"
+    },
+    {
+      "affiliation": "Leibniz-Institut für Archäologie",
+      "name": "Gronenborn, Detlef",
+      "orcid": "0000-0002-6467-5643",
+      "type": "DataCurator"
+    }
+  ],
+  "creators": [
+    {
+      "affiliation": "Helmholtz-Zentrum Hereon",
+      "name": "Wirtz, Kai W.",
+      "orcid": "0000-0002-6972-3878"
+    },
+    {
+      "affiliation": "Helmholtz-Zentrum Hereon",
+      "name": "Lemmen, Carsten",
+      "orcid": "0000-0003-3483-6036"
+    }
+  ],
+  "description": "Matlab and R scripts accompanying the publication 'Multicentennial cycles in continental demography synchronous with solar activity and climate stability'.  These scripts help to analyze and visualize archaeological C14 and paleoclimate proxy data.",
+  "journal_title": "Nature Communications ",
+  "journal_volume": "in revision",
+  "keywords": [
+    "Human occupation",
+    "Holocene",
+    "Cyclicity",
+    "Density dependent mortality",
+    "Climatic shifts",
+    "Demographic growth"
+  ],
+  "language": "en",
+  "license": "GPL-3.0-or-later",
+  "references": [
+    "Wirtz et al, Multicentennial cycles in continental demography synchronous with solar activity and climate stability, subm."
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.10467364",
+      "relation": "isNewVersionOf",
+      "resource_type": "software",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "https://github.com/kaiwirtz3/holocene",
+      "relation": "isDerivedFrom",
+      "resource_type": "software",
+      "scheme": "url"
+    }
+  ],
+  "title": "Multicentennial cycles in continental demography synchronous with solar activity and climate stability"
 }

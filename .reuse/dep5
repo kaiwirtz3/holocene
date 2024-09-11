@@ -29,3 +29,7 @@ License: CC-BY-4.0
 Files: legdat.dat
 Copyright: 2021-2024 Helmholtz-Zentrum hereon GmbH
 License: CC0-1.0
+
+Files: .zenodo.json
+Copyright: 2024 Helmholtz-Zentrum hereon GmbH
+License: CC0-1.0

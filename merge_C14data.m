@@ -1,13 +1,38 @@
+% This script merges C14 databases, creates a grid, and plots sites.
+% It processes data from two sources (dASIS+ and p3k14c), merges them,
+% and generates plots for different continental domains.
+% The script also saves the processed data and plots to files.
+%
 % SPDX-FileCopyrightText: 2023-2024 Helmholtz-Zentrum hereon GmbH
 % SPDX-FileContributor: Kai W. Wirtz  <kai.wirtz@hereon.de>
 % SPDX-License-Identifier: GPL-3.0-or-later
-%
-% merge C14 databases, create grid, and plot sites
-%
-%
+
+% Input files:
+% - c14mat/C14_dASIS.mat
+% - c14mat/p3k14c.mat
+
+% Output files:
+% - c14mat/C14_<continent>_<mode>_<patch>.mat
+% - <outputDirectory>/plots/map_<continent><mode>.png
+
+% Variables:
+% - lats, lons: Latitude and longitude of sites
+% - C14ages, C14SDs: C14 ages and their standard deviations
+% - SiteIDs, datIDs: Site and data identifiers
+% - clust: Array defining the boundaries of continental domains
+% - nx, ny: Grid resolution parameters
+% - mode: Configuration mode for data processing
+% - gcf, gca: Figure and axis handles for plotting
+% - cc: Continent name
+% - coastfilename: Filename for high-resolution coastline data
+% - pclust: Vector for all dates and sub-continental patches
+% - bo: Boundary coordinates for the current cluster
+% - ii, ii0, ii1: Indices for site selection and processing
+% - lon, lat, C14age, C14SD, SiteID, datID: Processed data for saving
+
 close all; %clear all
 addpath('~/tools/m_map'); %
-load_pars; % sets common parameters (scdir, cc, latlim, regs)
+load_pars; % sets common parameters (outputDirectory, cc, latitudeLimits, regs)
 
 % ----------  division lines for continental domain
 % left, bottom, right, top
@@ -169,6 +194,6 @@ for mode=1:1+3*strcmp(contname,'europe') % modes 2-4 only for Europe
 
   % save plot to file
   set(gcf,'PaperPositionMode','auto', 'InvertHardCopy','off','Visible','on');
-  outfilename=[scdir 'plots/map_' cont num2str(mode) '.png'];
+  outfilename=[outputDirectory 'plots/map_' cont num2str(mode) '.png'];
   print('-dpng','-r300', outfilename); % '-r600' for reproduction quality
 end % mode
